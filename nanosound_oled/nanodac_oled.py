@@ -4,6 +4,8 @@ from __future__ import unicode_literals
 from luma.core.interface.serial import i2c
 from luma.core.render import canvas
 from luma.oled.device import ssd1306, ssd1325, ssd1331, sh1106
+from subprocess import *
+
 import socket
 import mpd
 import time
@@ -28,6 +30,18 @@ except:
 
 client = mpd.MPDClient(use_unicode=True)
 client.connect("localhost", 6600)
+
+def GetLANIP():
+   cmd = "ip addr show eth0 | grep inet  | grep -v inet6 | awk '{print $2}' | cut -d '/' -f 1"
+   p = Popen(cmd, shell=True, stdout=PIPE)
+   output = p.communicate()[0]
+   return output[:-1]
+
+def GetWLANIP():
+   cmd = "ip addr show wlan0 | grep inet  | grep -v inet6 | awk '{print $2}' | cut -d '/' -f 1"
+   p = Popen(cmd, shell=True, stdout=PIPE)
+   output = p.communicate()[0]
+   return output[:-1]
 
 
 def make_font(name, size):
@@ -74,8 +88,19 @@ toggleAmp(1)
 while(not hasOLED):
    time.sleep(0.1)
 
+   
+try:
+   if(hasOLED):
+      with canvas(device) as draw:
+         draw.text((30, 2), "NanoSound",font=font1, fill="white")
+         draw.text((1, 18), GetLANIP(),font=font1, fill="white")
+         draw.text((1, 36), GetWLANIP(),font=font1, fill="white")
 
-
+   time.sleep(3)
+except:
+   pass
+   
+   
 while(hasOLED):
 
    try:
@@ -105,7 +130,7 @@ while(hasOLED):
                 			spotConActive = False
 
    	   		except Exception as inst:
-        			print(inst)
+        			spotConProcessRunning = False
         			spotConRunning = False
         			spotConActive = False
 
@@ -176,7 +201,7 @@ while(hasOLED):
                                 bitrate = ' '
                                 elapsed = ' '
 
-
+		time.sleep(0.1)	
 		with canvas(device) as draw:
 			draw.rectangle(device.bounding_box, outline="white", fill="black")
 			draw.text((x, 2), title,font=font1, fill="white")
