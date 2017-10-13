@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 from __future__ import unicode_literals
 
-from luma.core.interface.serial import i2c
-from luma.core.render import canvas
-from luma.oled.device import ssd1306, ssd1325, ssd1331, sh1106
+from oled.render import canvas
+from oled.device import ssd1306, sh1106
 from subprocess import *
 
 import socket
@@ -16,13 +15,13 @@ import urllib2
 from PIL import ImageFont
 from subprocess import check_output
 time.sleep(1)
-serial = i2c(port=1, address=0x3C)
+#serial = i2c(port=1, address=0x3C)
 
 hasOLED=True
 
 #device = ssd1306(serial, rotate=0)
 try:
-	device = sh1106(serial, rotate=0)
+	device = sh1106(port=1, address=0x3C)
 	hasOLED = True
 except:
 	hasOLED = False
@@ -203,7 +202,7 @@ while(hasOLED):
 
 		time.sleep(0.1)	
 		with canvas(device) as draw:
-			draw.rectangle(device.bounding_box, outline="white", fill="black")
+			draw.rectangle((0, 0, device.width-1, device.height-1), outline="white", fill="black")
 			draw.text((x, 2), title,font=font1, fill="white")
 			w3, h3 = draw.textsize(text="\uf177", font=awesomefont)			
 			w, h = draw.textsize(text=artist,font=font1)
