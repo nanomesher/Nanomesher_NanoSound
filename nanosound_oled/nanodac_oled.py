@@ -100,6 +100,9 @@ except:
    pass
    
    
+#only fetch when is 0
+fetch=0
+
 while(hasOLED):
 
    try:
@@ -112,7 +115,7 @@ while(hasOLED):
    try:        	
 	for x in range(-10,80):
 
-	    	if(spotConProcessRunning):	
+	    	if(spotConProcessRunning and fetch==0):	
 	   		try:
 				
         			status = json.load(urllib2.urlopen('http://localhost:4000/api/info/status'))
@@ -135,9 +138,9 @@ while(hasOLED):
 
 
 
-
-		currentsong = client.currentsong()
-		status = client.status()
+		if(fetch==0):
+			currentsong = client.currentsong()
+			status = client.status()
 
 		if('title' in currentsong):
 			title = currentsong['title']
@@ -191,7 +194,7 @@ while(hasOLED):
 				filetype = '\uf1bc'
 				bitrate = ' '
 				elapsed = ' '
-                if spotConRunning and spotConActive:
+                if spotConRunning and spotConActive and fetch==0:
 				spotconmeta = json.load(urllib2.urlopen('http://localhost:4000/api/info/metadata'))
                                 title = spotconmeta["track_name"]
                                 artist = spotconmeta["artist_name"]
@@ -200,7 +203,11 @@ while(hasOLED):
                                 bitrate = ' '
                                 elapsed = ' '
 
-		time.sleep(0.1)	
+		time.sleep(0.1)
+		fetch=fetch+1
+		if(fetch==5):
+			fetch=0
+	
 		with canvas(device) as draw:
 			draw.rectangle((0, 0, device.width-1, device.height-1), outline="white", fill="black")
 			draw.text((x, 2), title,font=font1, fill="white")
