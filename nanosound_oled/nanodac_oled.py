@@ -204,14 +204,14 @@ while(hasOLED):
 						filetype = '\uf1bc'
 						bitrate = ' '
 						elapsed = ' '
-						if spotConRunning and spotConActive:
-										spotconmeta = json.load(urllib2.urlopen('http://localhost:4000/api/info/metadata'))
-										title = spotconmeta["track_name"]
-										artist = spotconmeta["artist_name"]
-										check = 3
-										filetype = '\uf1bc'
-										bitrate = ' '
-										elapsed = ' '
+				if spotConRunning and spotConActive:
+						spotconmeta = json.load(urllib2.urlopen('http://localhost:4000/api/info/metadata'))
+						title = spotconmeta["track_name"]
+						artist = spotconmeta["artist_name"]
+						check = 3
+						filetype = '\uf1bc'
+						bitrate = ' '
+						elapsed = ' '
 
 			time.sleep(0.1)
 			fetch=fetch+1
