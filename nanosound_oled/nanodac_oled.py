@@ -48,6 +48,10 @@ def make_font(name, size):
         os.path.dirname(__file__), 'fonts', name))
     return ImageFont.truetype(font_path, size)
 
+
+
+
+showip=False;
 ampon=False;
 
 def toggleAmp(value):
@@ -58,6 +62,27 @@ def toggleAmp(value):
     elif(ampon==False):
 	GPIO.output(27,GPIO.HIGH)
 	ampon=True
+
+def toggleShowIP():
+    global showip
+    if(showip==False):
+	showip=True
+    elif(showip==True):
+	showip=False
+
+
+
+def optionButPress(value):
+    global startt,endt
+    if GPIO.input(16) == 1:
+        startt = time.time()
+    if GPIO.input(16) == 0:
+        endt = time.time()
+        elapsed = endt - startt
+        if(elapsed)<1:
+		toggleAmp(1)
+	else:
+		toggleShowIP()
 
 def get_pid(name):
     return check_output(["pidof",name])
@@ -76,7 +101,8 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 GPIO.setup(27,GPIO.OUT)
 GPIO.setup(16, GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
-GPIO.add_event_detect(16, GPIO.RISING, callback=toggleAmp, bouncetime=200)
+GPIO.add_event_detect(16, GPIO.BOTH, callback=optionButPress, bouncetime=200)
+
 spotConRunning = False
 spotConActive = False
 spotConProcessRunning = False
@@ -91,7 +117,7 @@ while(not hasOLED):
 try:
    if(hasOLED):
       with canvas(device) as draw:
-         draw.text((5, 2), "NanoSound v1.1",font=font1, fill="white")
+         draw.text((5, 2), "NanoSound v1.2",font=font1, fill="white")
          draw.text((1, 18), GetLANIP(),font=font1, fill="white")
          draw.text((1, 36), GetWLANIP(),font=font1, fill="white")
 
@@ -217,6 +243,10 @@ while(hasOLED):
 			fetch=fetch+1
 			if(fetch==5):
 				fetch=0
+
+			if(showip):
+				artist = GetLANIP()
+				title = GetWLANIP()
 		
 			with canvas(device) as draw:
 				draw.rectangle((0, 0, device.width-1, device.height-1), outline="white", fill="black")
