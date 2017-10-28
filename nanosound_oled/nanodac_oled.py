@@ -6,8 +6,9 @@ from oled.device import ssd1306, sh1106
 from subprocess import *
 
 import socket
-import mpd
+
 import time
+import datetime
 import os
 import  RPi.GPIO as GPIO
 import json
@@ -26,9 +27,6 @@ try:
 except:
 	hasOLED = False
 	
-
-client = mpd.MPDClient(use_unicode=True)
-client.connect("localhost", 6600)
 
 def GetLANIP():
    cmd = "ip addr show eth0 | grep inet  | grep -v inet6 | awk '{print $2}' | cut -d '/' -f 1"
@@ -117,7 +115,7 @@ while(not hasOLED):
 try:
    if(hasOLED):
       with canvas(device) as draw:
-         draw.text((5, 2), "NanoSound v1.2",font=font1, fill="white")
+         draw.text((5, 2), "NanoSound v1.3",font=font1, fill="white")
          draw.text((1, 18), GetLANIP(),font=font1, fill="white")
          draw.text((1, 36), GetWLANIP(),font=font1, fill="white")
 
@@ -153,7 +151,7 @@ while(hasOLED):
 			if(spotConProcessRunning and refresh):	
 				try:
 					
-						status = json.load(urllib2.urlopen('http://localhost:4000/api/info/status'))
+						status = json.load(urllib2.urlopen('http://127.0.0.1:4000/api/info/status'))
 						#print(status)
 
 						if(status["logged_in"]):
@@ -174,54 +172,58 @@ while(hasOLED):
 
 			if(refresh):
 
-				currentsong = client.currentsong()
-				status = client.status()
-
+				volstatus = json.load(urllib2.urlopen('http://127.0.0.1:3000/api/v1/getstate'))
+				
+				
 					
-				if('title' in currentsong):
-					title = currentsong['title']
+				if('title' in volstatus):
+					title = volstatus['title']
 				else:
-					if('name' in currentsong):
-						title = currentsong['name']
+					if('uri' in volstatus):
+						title = volstatus['uri'].split('/')[-1:][0]
 					else:
-						if('file' in currentsong):
-							
-							title = currentsong['file'].split('/')[-1:][0]
-						else:
-							title = ' '
+						title = ' '
+						
+				if(title is None):
+					title = ' '	
 
-				if('artist' in currentsong):
-					artist = currentsong['artist']
+				if('artist' in volstatus):
+					artist = volstatus['artist']
 				else:
 					artist=' '
 
-				if('file' in currentsong):
-					file = currentsong['file']
-					if "http://" in file:
-						filetype=webradio
-					elif "://" in file:
+				if(artist is None):
+					artist = ' '		
+					
+				if('trackType' in volstatus):
+					trackType = volstatus['trackType']
+					if (trackType == "webradio"):
 						filetype=webradio
 					else:
 						filetype=musicfile
 				else:
 					filetype=' '
 
-				if('bitrate' in status):
-					bitrate = status['bitrate'] + "kbps"	
+				if(('samplerate' in volstatus) and ('bitdepth' in volstatus)):
+					bitrate = str(volstatus['samplerate']) + " " + str(volstatus['bitdepth']) 
 				else:
 					bitrate = ' '
 
-				if(bitrate == "0kbps"):
-					bitrate = ' '
 
-				if('elapsed' in status):
-					elapsed = time.strftime('%H:%M:%S', time.gmtime(float(status['elapsed'])))
+				if('seek' in volstatus):
+					#elapsed = time.strftime('%H:%M:%S', time.gmtime(float(volstatus['seek'])))
+					
+					elapsec = round(float(volstatus['seek'])/1000)
+					elapsed = str(datetime.timedelta(seconds=elapsec))
+					
 				else:
 					elapsed = ' '
-				volume = status['volume']
-				state = status['state']
+				volume = str(volstatus['volume'])
 				
-
+				if('status' in volstatus):
+					state = volstatus['status']
+				else:
+					state = 'pause'
 
 				if (state=="pause" or state=="stop") and spotConRunning and (not spotConActive):
 						title = "Spotify Connect Ready"
@@ -241,7 +243,7 @@ while(hasOLED):
 
 			time.sleep(0.1)
 			fetch=fetch+1
-			if(fetch==5):
+			if(fetch==3):
 				fetch=0
 
 			if(showip):
@@ -257,11 +259,11 @@ while(hasOLED):
 				left = (device.width - w) / 2
 				left2 = (device.width - w2) / 2
 				draw.text((left, 18), artist,font=font1, fill="white")
-				draw.text((10,36), filetype, font=awesomefont,fill="white")
+				draw.text((5,36), filetype, font=awesomefont,fill="white")
 				if(ampon):
-					draw.text((device.width - 20,36), headphone, font=awesomefont,fill="white")
+					draw.text((device.width - 17,36), headphone, font=awesomefont,fill="white")
 				else:
-					draw.text((device.width - 20,36), " ", font=awesomefont,fill="white")
+					draw.text((device.width - 17,36), " ", font=awesomefont,fill="white")
 				draw.text((left2, 36), bitrate, fill="white")
 				draw.text((10, 50), elapsed, fill="white")
 				draw.text((87, 50), text="\uf028", font=awesomefont,fill="white")
