@@ -115,7 +115,7 @@ while(not hasOLED):
 try:
    if(hasOLED):
       with canvas(device) as draw:
-         draw.text((5, 2), "NanoSound v1.3",font=font1, fill="white")
+         draw.text((5, 2), "NanoSound v1.3.1",font=font1, fill="white")
          draw.text((1, 18), GetLANIP(),font=font1, fill="white")
          draw.text((1, 36), GetWLANIP(),font=font1, fill="white")
 
@@ -159,7 +159,7 @@ while(hasOLED):
 						else:
 								spotConRunning = False
 
-						if(status["playing"]):
+						if(status["playing"] and status["active"]):
 								spotConActive = True
 						else:
 								spotConActive = False
@@ -169,6 +169,10 @@ while(hasOLED):
 						spotConRunning = False
 						spotConActive = False
 
+						
+			#if(not refresh and state=="play" and not elapsec==0):
+			#	elapsec = elapsec+1
+			#	elapsed = str(datetime.timedelta(seconds=elapsec))
 
 			if(refresh):
 
@@ -233,7 +237,7 @@ while(hasOLED):
 						bitrate = ' '
 						elapsed = ' '
 				if spotConRunning and spotConActive:
-						spotconmeta = json.load(urllib2.urlopen('http://localhost:4000/api/info/metadata'))
+						spotconmeta = json.load(urllib2.urlopen('http://127.0.0.1:4000/api/info/metadata'))
 						title = spotconmeta["track_name"]
 						artist = spotconmeta["artist_name"]
 						check = 3
@@ -241,9 +245,9 @@ while(hasOLED):
 						bitrate = ' '
 						elapsed = ' '
 
-			time.sleep(0.1)
+			
 			fetch=fetch+1
-			if(fetch==3):
+			if(fetch==4):
 				fetch=0
 
 			if(showip):
@@ -268,6 +272,7 @@ while(hasOLED):
 				draw.text((10, 50), elapsed, fill="white")
 				draw.text((87, 50), text="\uf028", font=awesomefont,fill="white")
 				draw.text((100, 50), volume, fill="white")
+				time.sleep(0.3)
    finally:		
 		time.sleep(0.1)	
 
