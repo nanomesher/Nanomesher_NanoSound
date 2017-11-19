@@ -115,7 +115,7 @@ while(not hasOLED):
 try:
    if(hasOLED):
       with canvas(device) as draw:
-         draw.text((5, 2), "NanoSound v1.3.1",font=font1, fill="white")
+         draw.text((5, 2), "NanoSound v1.3.2",font=font1, fill="white")
          draw.text((1, 18), GetLANIP(),font=font1, fill="white")
          draw.text((1, 36), GetWLANIP(),font=font1, fill="white")
 
@@ -272,7 +272,7 @@ while(hasOLED):
 				draw.text((10, 50), elapsed, fill="white")
 				draw.text((87, 50), text="\uf028", font=awesomefont,fill="white")
 				draw.text((100, 50), volume, fill="white")
-				time.sleep(0.3)
+				time.sleep(0.1)
    finally:		
 		time.sleep(0.1)	
 
