@@ -115,7 +115,7 @@ while(not hasOLED):
 try:
    if(hasOLED):
       with canvas(device) as draw:
-         draw.text((5, 2), "NanoSound v1.3.2",font=font1, fill="white")
+         draw.text((5, 2), "NanoSound v1.3.3",font=font1, fill="white")
          draw.text((1, 18), GetLANIP(),font=font1, fill="white")
          draw.text((1, 36), GetWLANIP(),font=font1, fill="white")
 
@@ -140,7 +140,7 @@ while(hasOLED):
 	spotConProcessRunning = False
 	
    try:        	
-	for x in range(-10,80):
+	for x in range(100,-10,-1):
 			
 			if(fetch==0):
 				refresh=True
