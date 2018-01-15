@@ -115,7 +115,7 @@ while(not hasOLED):
 try:
    if(hasOLED):
       with canvas(device) as draw:
-         draw.text((5, 2), "NanoSound v1.3.3",font=font1, fill="white")
+         draw.text((5, 2), "NanoSound v1.4.0",font=font1, fill="white")
          draw.text((1, 18), GetLANIP(),font=font1, fill="white")
          draw.text((1, 36), GetWLANIP(),font=font1, fill="white")
 
@@ -178,7 +178,23 @@ while(hasOLED):
 
 				volstatus = json.load(urllib2.urlopen('http://127.0.0.1:3000/api/v1/getstate'))
 				
-				
+				if('repeat' in volstatus):
+					if(volstatus['repeat']):
+						repeat = '\uf01e'
+					else:
+						repeat = ' '
+				else:
+					repeat = ' '
+					
+				if('random' in volstatus):
+					if(volstatus['random']):
+						random = '\uf074'
+					else:
+						random = ' '
+				else:
+					random = ' '					
+					
+								
 					
 				if('title' in volstatus):
 					title = volstatus['title']
@@ -270,8 +286,10 @@ while(hasOLED):
 					draw.text((device.width - 17,36), " ", font=awesomefont,fill="white")
 				draw.text((left2, 36), bitrate, fill="white")
 				draw.text((10, 50), elapsed, fill="white")
-				draw.text((87, 50), text="\uf028", font=awesomefont,fill="white")
-				draw.text((100, 50), volume, fill="white")
+				draw.text((60, 50), repeat, font=awesomefont, fill="white")
+				draw.text((75, 50), random, font=awesomefont, fill="white")
+				draw.text((92, 50), text="\uf028", font=awesomefont,fill="white")
+				draw.text((105, 50), volume, fill="white")
 				time.sleep(0.1)
    finally:		
 		time.sleep(0.1)	

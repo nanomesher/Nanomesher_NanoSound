@@ -1,0 +1,21 @@
+begin
+  prog = nanosound
+  button = KEY_MUTE
+  config = mute
+  repeat = 0
+end
+
+begin
+  prog = nanosound
+  button = KEY_RANDOM
+  config = random
+  repeat = 0
+end
+
+begin
+  prog = nanosound
+  button = KEY_REPEAT
+  config = repeat
+  repeat = 0
+end
+
