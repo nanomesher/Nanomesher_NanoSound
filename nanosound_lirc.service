@@ -1,0 +1,10 @@
+[Unit]
+Description=NanoSound LIRC Service
+
+[Service]
+ExecStart=/home/volumio/nanosound_oled/nanodac_lirc.py
+StandardOutput=null
+
+[Install]
+WantedBy=multi-user.target
+Alias=nanosound_lirc.service
