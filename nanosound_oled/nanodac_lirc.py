@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from __future__ import unicode_literals
 PYTHONIOENCODING="UTF-8"
 from socketIO_client import SocketIO, LoggingNamespace
