@@ -34,7 +34,7 @@ def unrepeat():
   urllib2.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=repeat&value=false')
 
 
-sockid = lirc.init("nanosound","/home/volumio/nanosound_oled/lircrc", blocking=False)
+sockid = lirc.init("nanosound","/home/volumio/nanosound_oled/lircrc", blocking=True)
 
 muted=False
 randomed=False
