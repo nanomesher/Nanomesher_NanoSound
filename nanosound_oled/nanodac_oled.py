@@ -128,6 +128,8 @@ except:
 fetch=0
 refresh=False
 
+lastupdate = datetime.datetime.now()
+
 while(hasOLED):
    
   
@@ -140,7 +142,7 @@ while(hasOLED):
 	spotConProcessRunning = False
 	
    try:        	
-	for x in range(100,-10,-1):
+	for x in range(100,-10,-3):
 			
 			if(fetch==0):
 				refresh=True
@@ -169,10 +171,15 @@ while(hasOLED):
 						spotConRunning = False
 						spotConActive = False
 
-						
-			#if(not refresh and state=="play" and not elapsec==0):
-			#	elapsec = elapsec+1
-			#	elapsed = str(datetime.timedelta(seconds=elapsec))
+
+			print(datetime.datetime.now()-lastupdate)
+
+			if(not refresh and state=="play" and not elapsec==0 and ((datetime.datetime.now()-lastupdate).total_seconds()>1)):
+				lastupdate = datetime.datetime.now()
+				elapsec = elapsec+1
+				elapsed = str(datetime.timedelta(seconds=elapsec))
+
+
 
 			if(refresh):
 
@@ -290,7 +297,7 @@ while(hasOLED):
 				draw.text((75, 50), random, font=awesomefont, fill="white")
 				draw.text((92, 50), text="\uf028", font=awesomefont,fill="white")
 				draw.text((105, 50), volume, fill="white")
-				time.sleep(0.1)
+				time.sleep(0.35)
    finally:		
-		time.sleep(0.1)	
+		time.sleep(0.35)	
 
