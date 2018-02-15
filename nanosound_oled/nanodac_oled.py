@@ -115,7 +115,7 @@ while(not hasOLED):
 try:
    if(hasOLED):
       with canvas(device) as draw:
-         draw.text((5, 2), "NanoSound v1.4.2",font=font1, fill="white")
+         draw.text((5, 2), "NanoSound v1.4.3",font=font1, fill="white")
          draw.text((1, 18), GetLANIP(),font=font1, fill="white")
          draw.text((1, 36), GetWLANIP(),font=font1, fill="white")
 
@@ -140,6 +140,7 @@ while(hasOLED):
 	spotConProcessRunning = True
    except:
 	spotConProcessRunning = False
+	
 	
    try:        	
 	for x in range(100,-10,-3):
@@ -226,13 +227,18 @@ while(hasOLED):
 					trackType = volstatus['trackType']
 					if (trackType == "webradio"):
 						filetype=webradio
+					elif (trackType == "spotify"):
+						filetype = '\uf1bc'
 					else:
 						filetype=musicfile
 				else:
 					filetype=' '
 
 				if(('samplerate' in volstatus) and ('bitdepth' in volstatus)):
-					bitrate = str(volstatus['samplerate']) + " " + str(volstatus['bitdepth']) 
+					if(str(volstatus['samplerate']) == "Volspotconnect2"):
+						bitrate = str(volstatus['bitdepth']) 
+					else:
+						bitrate = str(volstatus['samplerate']) + " " + str(volstatus['bitdepth']) 
 				else:
 					bitrate = ' '
 
