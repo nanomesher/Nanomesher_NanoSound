@@ -1,0 +1,10 @@
+[Unit]
+Description=NanoSound Kodi OLED Display Service
+
+[Service]
+ExecStart=/home/osmc/Nanomesher_NanoSound/nanosound_kodi/nanosound_kodioled.py
+StandardOutput=null
+
+[Install]
+WantedBy=multi-user.target
+Alias=nanosound_kodioled.service
