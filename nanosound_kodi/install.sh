@@ -16,16 +16,18 @@ sudo pip install wheel
 sudo pip install rpi.gpio
 #sudo -H pip install --upgrade python-mpd2 socketIO-client
 
-sudo cp ~/Nanomesher_NanoSound/nanosound_kodioled.service  /lib/systemd/system/
+
+echo "Installing python services"
+
 sudo chmod 777 ~/Nanomesher_NanoSound/nanosound_kodi/*.py
 
 sudo cp ~/Nanomesher_NanoSound/nanosound_kodioled.service  /lib/systemd/system/
-
+sudo cp ~/Nanomesher_NanoSound/nanomesher_piswitch.service  /lib/systemd/system/
 
 sudo /bin/systemctl daemon-reload
 sudo /bin/systemctl enable nanosound_kodioled.service
 sudo /bin/systemctl start nanosound_kodioled.service
-
-
+sudo /bin/systemctl enable nanomesher_piswitch.service
+sudo /bin/systemctl start nanomesher_piswitch.service
 
 echo "Nanosound for Kodi installed"

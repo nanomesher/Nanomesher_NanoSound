@@ -118,7 +118,7 @@ try:
          draw.text((1, 36), GetLANIP(),font=font1, fill="white")
          draw.text((1, 50), GetWLANIP(),font=font1, fill="white")
 
-   time.sleep(3)
+   time.sleep(10)
 except:
    pass
    
