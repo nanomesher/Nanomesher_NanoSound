@@ -9,7 +9,7 @@ sudo apt-get update
 #sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 9165938D90FDDD2E
 
 #START OF python devs
-sudo apt-get -y install i2c-tools python-smbus python-pip python-dev python-imaging python-lirc
+sudo apt-get -y install i2c-tools python-smbus python-pip python-dev python-imaging
 sudo apt-get -y install python-setuptools
 sudo apt-get -y install python-pip python-dev gcc
 sudo pip install wheel
