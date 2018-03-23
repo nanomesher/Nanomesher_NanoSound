@@ -38,13 +38,13 @@ end
 begin
     prog = irexec
     button = KEY_FASTFORWARD
-    config = mpc seek +1%
+    config = volumio seek plus
     repeat = 4
 end
 begin
     prog = irexec
     button = KEY_REWIND
-    config = mpc seek -1%
+    config = volumio seek minus
     repeat = 4
 end
 begin

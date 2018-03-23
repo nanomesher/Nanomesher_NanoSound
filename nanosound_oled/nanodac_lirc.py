@@ -6,12 +6,49 @@ import lirc
 import urllib2
 import json
 
+
+playlist=[]
+playing_index=0
+
+
+def on_getState_response(*args):
+    global playlist
+    alist = args
+    playlist = alist[0]
+    
+def playNextPlaylist():
+    global playing_index
+    playing_index = playing_index + 1
+    if(playing_index >= len(playlist)):
+        playing_index = 0
+    playPlaylist(playing_index)
+
+def playPrevPlaylist():
+    global playing_index
+    playing_index = playing_index - 1
+    if(playing_index < 0):
+        playing_index = (len(playlist)-1)
+    playPlaylist(playing_index)
+
+
+def listPlayList():
+    with SocketIO('127.0.0.1', 3000, LoggingNamespace) as socketIO:
+        socketIO.on('pushListPlaylist', on_getState_response)
+        socketIO.emit('listPlaylist','')
+        socketIO.wait(seconds=2)
+		
+def playPlaylist(playlist_index):
+	playlistname = playlist[playlist_index]
+	urllib2.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=playplaylist&name=' + playlistname)
+
+
+	
 def mute():
   #urllib2.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=volume&value=mute')
 
   with SocketIO('127.0.0.1', 3000, LoggingNamespace) as socketIO:
     socketIO.emit('mute','')
-
+	
 
 def unmute():
   #urllib2.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=volume&value=unmute')
@@ -34,6 +71,7 @@ def unrepeat():
   urllib2.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=repeat&value=false')
 
 
+listPlayList()
 sockid = lirc.init("nanosound","/home/volumio/nanosound_oled/lircrc", blocking=True)
 
 muted=False
@@ -71,20 +109,24 @@ while(True):
    button = lirc.nextcode()
    if(len(button)>0):
      command=button[0]
-     if(not muted) and (command=="mute"):
+	 	
+     if(command=="listup"):
+		playNextPlaylist()
+     elif(command=="listdown"):
+		playPrevPlaylist()					
+     elif(not muted) and (command=="mute"):
        muted=True
        mute()
      elif(muted) and (command=="mute"):
        muted=False
        unmute()
-     if(not randomed) and (command=="random"):
+     elif(not randomed) and (command=="random"):
        randomed=True
        randomset()
      elif(randomed) and (command=="random"):
        randomed=False
        unrandom()
-
-     if(not repeated) and (command=="repeat"):
+     elif(not repeated) and (command=="repeat"):
        repeated=True
        repeat()
      elif(repeated) and (command=="repeat"):

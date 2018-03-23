@@ -19,3 +19,24 @@ begin
   repeat = 0
 end
 
+begin
+  prog = nanosound
+  button = KEY_REPEAT
+  config = repeat
+  repeat = 0
+end
+
+begin
+  prog = nanosound
+  button = KEY_CHANNELUP
+  config = listup
+  repeat = 0
+end
+
+begin
+  prog = nanosound
+  button = KEY_CHANNELDOWN
+  config = listdown
+  repeat = 0
+end
+
