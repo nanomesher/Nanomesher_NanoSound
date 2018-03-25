@@ -6,7 +6,6 @@ import lirc
 import urllib2
 import json
 
-
 playlist=[]
 playing_index=0
 
@@ -17,6 +16,7 @@ def on_getState_response(*args):
     playlist = alist[0]
     
 def playNextPlaylist():
+    listPlayList()
     global playing_index
     playing_index = playing_index + 1
     if(playing_index >= len(playlist)):
@@ -24,6 +24,7 @@ def playNextPlaylist():
     playPlaylist(playing_index)
 
 def playPrevPlaylist():
+    listPlayList()
     global playing_index
     playing_index = playing_index - 1
     if(playing_index < 0):
@@ -35,12 +36,12 @@ def listPlayList():
     with SocketIO('127.0.0.1', 3000, LoggingNamespace) as socketIO:
         socketIO.on('pushListPlaylist', on_getState_response)
         socketIO.emit('listPlaylist','')
-        socketIO.wait(seconds=2)
+        socketIO.wait(seconds=1)
 		
 def playPlaylist(playlist_index):
 	playlistname = playlist[playlist_index]
 	urllib2.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=playplaylist&name=' + playlistname)
-
+                          
 
 	
 def mute():
@@ -71,7 +72,7 @@ def unrepeat():
   urllib2.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=repeat&value=false')
 
 
-listPlayList()
+#listPlayList()
 sockid = lirc.init("nanosound","/home/volumio/nanosound_oled/lircrc", blocking=True)
 
 muted=False
@@ -103,6 +104,9 @@ if('mute' in volstatus):
 		muted = False
 else:
 	muted = False	
+
+
+
 
 while(True):
 
