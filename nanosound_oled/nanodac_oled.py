@@ -20,9 +20,21 @@ time.sleep(1)
 
 hasOLED=True
 
+try:
+	display="1"
+	with open('/data/configuration/miscellanea/nanosound/config.json') as f:
+    	  data = json.load(f)
+          display=data['oledDisplay']['value']
+except:
+	display="1"
+
 #device = ssd1306(serial, rotate=0)
 try:
-	device = sh1106(port=1, address=0x3C)
+	if(display=="2"):
+		device = ssd1306(port=1, address=0x3C)
+	else:
+		device = sh1106(port=1, address=0x3C)
+
 	hasOLED = True
 except:
 	hasOLED = False
@@ -115,7 +127,7 @@ while(not hasOLED):
 try:
    if(hasOLED):
       with canvas(device) as draw:
-         draw.text((5, 2), "NanoSound v1.5.1",font=font1, fill="white")
+         draw.text((5, 2), "NanoSound v1.5.2",font=font1, fill="white")
          draw.text((1, 18), GetLANIP(),font=font1, fill="white")
          draw.text((1, 36), GetWLANIP(),font=font1, fill="white")
 
