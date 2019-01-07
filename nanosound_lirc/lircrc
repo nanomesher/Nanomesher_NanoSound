@@ -53,4 +53,16 @@ begin
     config = mpc volume 0
     repeat = 0
 end
+begin
+    prog = irexec
+    button = KEY_SHUFFLE
+    config = volumio random
+    repeat = 0
+end
+begin
+    prog = irexec
+    button = KEY_MEDIA_REPEAT
+    config = volumio repeat
+    repeat = 0
+end
 
