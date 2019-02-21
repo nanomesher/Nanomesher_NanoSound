@@ -84,8 +84,8 @@ class Screen:
           'small':   self.make_font('DejaVuSansMono.ttf', 8),
           'medium':  self.make_font('DejaVuSansMono.ttf', 10),
           'big':     self.make_font('DejaVuSansMono.ttf', 16),
-          'medium_u':  self.make_font('code2000.ttf', 10),
-          'big_u':     self.make_font('code2000.ttf', 16)
+          'medium_u':  self.make_font('simhei.ttf', 10),
+          'big_u':     self.make_font('simhei.ttf', 15)
         }
 
 
@@ -124,7 +124,7 @@ class Screen:
             else:
                 ip = "volumio"
 
-            draw.text((3, 40), 'NanoSound v1.6.0', font=self.fonts['small'], fill='white')
+            draw.text((3, 40), 'NanoSound v1.6.1', font=self.fonts['small'], fill='white')
             draw.text((3, 50), ip, font=self.fonts['small'], fill='white')
 
     def draw(self, data):
@@ -184,7 +184,7 @@ class Screen:
             # Artist & Track
             txt = data['artist']
             if 'album' in data and data['album'] != None:
-                txt += " \u22c5 " + data['album']
+                txt += " - " + data['album']
 
             if self.artistScroll == None or txt != self.artistScroll.text:
                 self.artistScroll = self.Scroll(self.device.width, self.device.height, txt, self.fonts['medium_u'], 11, 5)
