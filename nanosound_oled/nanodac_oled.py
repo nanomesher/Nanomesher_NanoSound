@@ -124,7 +124,7 @@ class Screen:
             else:
                 ip = "volumio"
 
-            draw.text((3, 40), 'NanoSound v1.6.1', font=self.fonts['small'], fill='white')
+            draw.text((3, 40), 'NanoSound v1.6.2', font=self.fonts['small'], fill='white')
             draw.text((3, 50), ip, font=self.fonts['small'], fill='white')
 
     def draw(self, data):
@@ -318,10 +318,11 @@ GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.add_event_detect(16, GPIO.BOTH, callback=optionButPress,
                       bouncetime=200)
 
-screen = Screen(device)
-data_stub = {"status":"stop","title":"(No data)","artist":"","samplerate":"","bitdepth":"","random":False,"repeat":False,"repeatSingle":False,"volume":0}
-spotify_stub = {'logged_in': False, 'playing': False, 'active': False}
-spotifyProcess = False
+if(hasOLED):
+    screen = Screen(device)
+    data_stub = {"status":"stop","title":"(No data)","artist":"","samplerate":"","bitdepth":"","random":False,"repeat":False,"repeatSingle":False,"volume":0}
+    spotify_stub = {'logged_in': False, 'playing': False, 'active': False}
+    spotifyProcess = False
 # Switch ampon
 
 toggleAmp(1)
