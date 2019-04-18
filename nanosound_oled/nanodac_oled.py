@@ -2,13 +2,11 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
-
 from oled.render import canvas
 from oled.device import ssd1306, sh1106
 from subprocess import *
 
 import socket
-
 import time
 import datetime
 import os

@@ -9,7 +9,6 @@ import json
 playlist=[]
 playing_index=0
 
-
 def on_getState_response(*args):
     global playlist
     alist = args
