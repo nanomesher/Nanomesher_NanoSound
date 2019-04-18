@@ -124,7 +124,7 @@ class Screen:
             else:
                 ip = "volumio"
 
-            draw.text((3, 40), 'NanoSound v1.6.2', font=self.fonts['small'], fill='white')
+            draw.text((3, 40), 'NanoSound v1.6.3', font=self.fonts['small'], fill='white')
             draw.text((3, 50), ip, font=self.fonts['small'], fill='white')
 
     def draw(self, data):
@@ -193,9 +193,14 @@ class Screen:
             self.artistScroll.draw(draw)
             self.titleScroll.draw(draw)
 
+            if('trackType' in data):
+                trackType = data['trackType']
+            else:
+                trackType = '-'
+
             # Track data
-            if data['trackType'] != 'webradio' and data['trackType'] != 'spotify':
-                txt = data['trackType'] + ' '
+            if trackType != 'webradio' and trackType != 'spotify':
+                txt = trackType + ' '
             else:
                 txt = ''
 
@@ -207,17 +212,17 @@ class Screen:
                          + data['samplerate'].replace(" KHz", '').replace("kHz", '').replace("44.1->", '')
 
             (w, h) = draw.textsize(txt, font=self.fonts['small'])
-            if data['trackType'] == 'webradio':
+            if trackType == 'webradio':
                 draw.text(((self.device.width-w)/2-6, 40), self.icons['webradio'], font=self.fonts['awesmall'], fill='white')
                 draw.text(((self.device.width-w)/2+6, 38), txt, font=self.fonts['small'], fill='white')
-            elif data['trackType'] == 'spotify':
+            elif trackType == 'spotify':
                 draw.text(((self.device.width-w)/2-6, 40), self.icons['spotify'], font=self.fonts['awesmall'], fill='white')
                 draw.text(((self.device.width-w)/2+6, 38), txt, font=self.fonts['small'], fill='white')
             else:
                 draw.text(((self.device.width-w)/2, 38), txt, font=self.fonts['small'], fill='white')
 
             # Elapsed / Duration
-            if data['trackType'] == 'webradio' or data['trackType'] == 'spotify':
+            if trackType == 'webradio' or trackType == 'spotify':
                 return
 
             if 'seek' in data:
@@ -398,7 +403,12 @@ while hasOLED:
             data['artist'] = GetLANIP()
             data['title']  = GetWLANIP()
     else:
-        if data['status'] == 'play' and (data['trackType'] != 'webradio' or data['trackType'] != 'spotify'):
+        if('trackType' in data):
+            trackType = data['trackType']
+        else:
+            trackType = '-'
+
+        if data['status'] == 'play' and (trackType != 'webradio' or trackType != 'spotify'):
             data['seek'] += 250
 
     counter += 1
