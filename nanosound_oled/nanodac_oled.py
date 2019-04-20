@@ -111,6 +111,7 @@ class Screen:
             draw.rectangle((0, 0, self.device.width - 1, self.device.height - 1), outline='black', fill='black')
         self.enabled = False
 
+
     def logo(self, lanip="", wlanip=""):
 
         if(self.isColour):
@@ -424,12 +425,12 @@ GPIO.setup(27, GPIO.OUT)
 GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.add_event_detect(16, GPIO.BOTH, callback=optionButPress,
                       bouncetime=30)
-
-screen = Screen(device, isColour)
-data_stub = {"status": "stop", "title": "(No data)", "artist": "", "samplerate": "", "bitdepth": "", "random": False,
-             "repeat": False, "repeatSingle": False, "volume": 0}
-spotify_stub = {'logged_in': False, 'playing': False, 'active': False}
-spotifyProcess = False
+if(hasOLED):
+    screen = Screen(device, isColour)
+    data_stub = {"status": "stop", "title": "(No data)", "artist": "", "samplerate": "", "bitdepth": "", "random": False,
+                 "repeat": False, "repeatSingle": False, "volume": 0}
+    spotify_stub = {'logged_in': False, 'playing': False, 'active': False}
+    spotifyProcess = False
 # Switch ampon
 
 toggleAmp(1)
