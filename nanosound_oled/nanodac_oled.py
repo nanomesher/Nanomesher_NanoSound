@@ -361,11 +361,11 @@ def toggleShowIP():
 
 def optionButPress(value):
     global startt, endt, idle, screen
-    if GPIO.input(16) == 1:
+    if GPIO.input(GPIOButtonNo) == 1:
         startt = time.time()
-    if GPIO.input(16) == 0:
+    if GPIO.input(GPIOButtonNo) == 0:
         idle = 0
-        if not screen.enabled:
+        if (hasOLED and not screen.enabled):
             screen.enable()
         endt = time.time()
         elapsed = endt - startt
@@ -392,13 +392,17 @@ hasOLED = False
 isColour = False
 showip = False
 ampon = False
+model = 'DAC'
+
 try:
     display = '1'
     with open('/data/configuration/miscellanea/nanosound/config.json') as f:
         data = json.load(f)
         display = data['oledDisplay']['value']
+        model = data['model']['value']
 except:
     display = '1'
+    model = 'DAC'
 
 try:
     if display == '2':
@@ -422,9 +426,16 @@ except:
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 GPIO.setup(27, GPIO.OUT)
-GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.add_event_detect(16, GPIO.BOTH, callback=optionButPress,
-                      bouncetime=30)
+
+GPIOButtonNo = 16
+
+if(model=="DAC2"):
+    GPIOButtonNo = 6
+
+GPIO.setup(GPIOButtonNo, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.add_event_detect(GPIOButtonNo, GPIO.BOTH, callback=optionButPress,bouncetime=30)
+
+
 if(hasOLED):
     screen = Screen(device, isColour)
     data_stub = {"status": "stop", "title": "(No data)", "artist": "", "samplerate": "", "bitdepth": "", "random": False,
