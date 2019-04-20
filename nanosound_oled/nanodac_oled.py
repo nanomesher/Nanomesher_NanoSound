@@ -408,7 +408,7 @@ try:
     if display == '2':
         device = ssd1306(port=1, address=0x3C)
     elif display == '3':
-        actual_args = ['-f', 'conf/ssd1351.conf']
+        actual_args = ['-f', '/home/volumio/nanosound_oled/ssd1351.conf']
         parser = cmdline.create_parser(description='luma.examples arguments')
         args = parser.parse_args(actual_args)
         config = cmdline.load_config(args.config)
@@ -416,7 +416,6 @@ try:
         device = cmdline.create_device(args)
         isColour = True
     else:
-        print("sh1106")
         device = sh1106(port=1, address=0x3C)
 
     hasOLED = True
