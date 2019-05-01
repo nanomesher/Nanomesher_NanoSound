@@ -1,0 +1,10 @@
+[Unit]
+Description=NanoSound Rotary Volume Control
+
+[Service]
+ExecStart=/home/volumio/nanosound_oled/nanodac_rotary.py
+StandardOutput=null
+
+[Install]
+WantedBy=multi-user.target
+Alias=nanosound_rotary.service

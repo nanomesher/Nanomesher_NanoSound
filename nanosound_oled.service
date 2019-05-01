@@ -3,6 +3,7 @@ Description=NanoSound OLED Diplay Service
 
 [Service]
 ExecStart=/home/volumio/nanosound_oled/nanodac_oled.py
+WorkingDirectory=/home/volumio/nanosound_oled
 StandardOutput=null
 
 [Install]
