@@ -21,6 +21,8 @@ from PIL import ImageFont
 from subprocess import check_output
 
 
+
+
 class Screen:
     icons = {
         'spotify': "\uf1bc",
@@ -132,7 +134,7 @@ class Screen:
                 else:
                     ip = "volumio.local"
 
-                draw.text((3, 65), 'NanoSound v1.7.2', font=self.fonts['small'], fill='white')
+                draw.text((3, 65), 'NanoSound v1.7.3', font=self.fonts['small'], fill='white')
                 draw.text((3, 80), ip, font=self.fonts['small'], fill='white')
                 draw.text((3, 95), "http://nanomesher.com/", font=self.fonts['small'], fill='white')
                 
@@ -164,7 +166,7 @@ class Screen:
                 else:
                     ip = "volumio"
 
-                draw.text((3, 40), 'NanoSound v1.7.0', font=self.fonts['small'], fill='white')
+                draw.text((3, 40), 'NanoSound v1.7.3', font=self.fonts['small'], fill='white')
                 draw.text((3, 50), ip, font=self.fonts['small'], fill='white')
 
     def getTitleColour(self):
@@ -427,9 +429,12 @@ GPIO.setwarnings(False)
 GPIO.setup(27, GPIO.OUT)
 
 GPIOButtonNo = 16
+GPIOSWMenuButtonNo = 0
 
 if(model=="DAC2"):
     GPIOButtonNo = 6
+    GPIO.setup(GPIOSWMenuButtonNo, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.add_event_detect(GPIOSWMenuButtonNo, GPIO.BOTH, callback=optionButPress,bouncetime=30)
 
 GPIO.setup(GPIOButtonNo, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.add_event_detect(GPIOButtonNo, GPIO.BOTH, callback=optionButPress,bouncetime=30)
