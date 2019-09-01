@@ -134,7 +134,7 @@ class Screen:
                 else:
                     ip = "volumio.local"
 
-                draw.text((3, 65), 'NanoSound v1.7.3', font=self.fonts['small'], fill='white')
+                draw.text((3, 65), 'NanoSound v1.8.0', font=self.fonts['small'], fill='white')
                 draw.text((3, 80), ip, font=self.fonts['small'], fill='white')
                 draw.text((3, 95), "http://nanomesher.com/", font=self.fonts['small'], fill='white')
                 
@@ -166,7 +166,7 @@ class Screen:
                 else:
                     ip = "volumio"
 
-                draw.text((3, 40), 'NanoSound v1.7.3', font=self.fonts['small'], fill='white')
+                draw.text((3, 40), 'NanoSound v1.8.0', font=self.fonts['small'], fill='white')
                 draw.text((3, 50), ip, font=self.fonts['small'], fill='white')
 
     def getTitleColour(self):
