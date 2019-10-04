@@ -45,6 +45,7 @@ class Screen:
     titleScroll = None
     enabled = True
     isColour = False
+    enableClock = False
 
     albumartwidth = 50
     albumartheight = 50
@@ -107,6 +108,9 @@ class Screen:
 
     def enable(self):
         self.enabled = True
+
+    def enableClock(self):
+        self.enableClock = True
 
     def disable(self):
         with canvas(device) as draw:
@@ -417,6 +421,9 @@ try:
         args = parser.parse_args(config + actual_args)
         device = cmdline.create_device(args)
         isColour = True
+    elif display == 'N':
+        isColour = False
+        hasOLED = False
     else:
         device = sh1106(port=1, address=0x3C)
 

@@ -7,6 +7,8 @@ from time import time
 import RPi.GPIO as GPIO
 import urllib2
 import json
+import configparser
+import os.path
 
 playlist = []
 playing_index = 0
@@ -159,6 +161,25 @@ muted = False
 randomed = False
 repeated = False  # 0-no repeat , 1-repeat one, 2-repeat
 
+
+config = configparser.ConfigParser()
+
+if(os.path.isfile('/home/volumio/nanosound_keys.ini')):
+    config.read('/home/volumio/nanosound_keys.ini')
+else:
+    config.read('/conf/keys.ini')
+MUTE_BUTTON = config['DEFAULT']['MUTE_BUTTON']
+PREV_BUTTON = config['DEFAULT']['PREV_BUTTON']
+NEXT_BUTTON = config['DEFAULT']['NEXT_BUTTON']
+TOGGLE_BUTTON = config['DEFAULT']['TOGGLE_BUTTON']
+VOLUP_BUTTON = config['DEFAULT']['VOLUP_BUTTON']
+VOLDOWN_BUTTON = config['DEFAULT']['VOLDOWN_BUTTON']
+NEXTPLAYLIST_BUTTON = config['DEFAULT']['NEXTPLAYLIST_BUTTON']
+PREVPLAYLIST_BUTTON = config['DEFAULT']['PREVPLAYLIST_BUTTON']
+RANDOM_BUTTON = config['DEFAULT']['RANDOM_BUTTON']
+REPEAT_BUTTON = config['DEFAULT']['REPEAT_BUTTON']
+STOP_BUTTON = config['DEFAULT']['STOP_BUTTON']
+
 volstatus = json.load(urllib2.urlopen('http://127.0.0.1:3000/api/v1/getstate'))
 
 if ('repeat' in volstatus):
@@ -196,39 +217,39 @@ if __name__ == "__main__":
         code = on_ir_receive(11)
         if code:
             hexcode = str(hex(code))
-            if (hexcode == '0xf740bf') and (not muted):
+            if (hexcode == MUTE_BUTTON) and (not muted):
                 muted = True
                 mute()
-            elif (hexcode == '0xf740bf') and (muted):
+            elif (hexcode == MUTE_BUTTON) and (muted):
                 muted = False
                 unmute()
-            elif (hexcode == '0xf708f7'):
+            elif (hexcode == PREV_BUTTON):
                 songprev()
-            elif (hexcode == '0xf78877'):
+            elif (hexcode == NEXT_BUTTON):
                 songnext()
-            elif (hexcode == '0xf728d7'):
+            elif (hexcode == TOGGLE_BUTTON):
                 toggle()
-            elif (hexcode == '0xf7b04f'):
+            elif (hexcode == VOLUP_BUTTON):
                 volup()
-            elif (hexcode == '0xf730cf'):
+            elif (hexcode == VOLDOWN_BUTTON):
                 voldown()
-            elif (hexcode == '0xf7f00f'):
+            elif (hexcode == NEXTPLAYLIST_BUTTON):
                 playNextPlaylist()
-            elif (hexcode == '0xf7708f'):
+            elif (hexcode == PREVPLAYLIST_BUTTON):
                 playPrevPlaylist()
-            elif (not randomed) and (hexcode == "0xf7e817"):
+            elif (not randomed) and (hexcode == RANDOM_BUTTON):
                 randomed = True
                 randomset()
-            elif (randomed) and (hexcode == "0xf7e817"):
+            elif (randomed) and (hexcode == RANDOM_BUTTON):
                 randomed = False
                 unrandom()
-            elif (not repeated) and (hexcode == "0xf76897"):
+            elif (not repeated) and (hexcode == REPEAT_BUTTON):
                 repeated = True
                 repeat()
-            elif (repeated) and (hexcode == "0xf76897"):
+            elif (repeated) and (hexcode == REPEAT_BUTTON):
                 repeated = False
                 unrepeat()
-            elif (hexcode == "0xf7a857"):
+            elif (hexcode == STOP_BUTTON):
                 stop()
 
 #    destroy()
