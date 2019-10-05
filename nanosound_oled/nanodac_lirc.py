@@ -7,7 +7,7 @@ from time import time
 import RPi.GPIO as GPIO
 import urllib2
 import json
-import configparser
+import ConfigParser
 import os.path
 
 playlist = []
@@ -162,23 +162,23 @@ randomed = False
 repeated = False  # 0-no repeat , 1-repeat one, 2-repeat
 
 
-config = configparser.ConfigParser()
+config = ConfigParser.ConfigParser()
 
 if(os.path.isfile('/home/volumio/nanosound_keys.ini')):
     config.read('/home/volumio/nanosound_keys.ini')
 else:
-    config.read('/conf/keys.ini')
-MUTE_BUTTON = config['DEFAULT']['MUTE_BUTTON']
-PREV_BUTTON = config['DEFAULT']['PREV_BUTTON']
-NEXT_BUTTON = config['DEFAULT']['NEXT_BUTTON']
-TOGGLE_BUTTON = config['DEFAULT']['TOGGLE_BUTTON']
-VOLUP_BUTTON = config['DEFAULT']['VOLUP_BUTTON']
-VOLDOWN_BUTTON = config['DEFAULT']['VOLDOWN_BUTTON']
-NEXTPLAYLIST_BUTTON = config['DEFAULT']['NEXTPLAYLIST_BUTTON']
-PREVPLAYLIST_BUTTON = config['DEFAULT']['PREVPLAYLIST_BUTTON']
-RANDOM_BUTTON = config['DEFAULT']['RANDOM_BUTTON']
-REPEAT_BUTTON = config['DEFAULT']['REPEAT_BUTTON']
-STOP_BUTTON = config['DEFAULT']['STOP_BUTTON']
+    config.read('/home/volumio/nanosound_oled/conf/nanosound_keys.ini')
+MUTE_BUTTON = config.get('Default','MUTE_BUTTON')
+PREV_BUTTON = config.get('Default','PREV_BUTTON')
+NEXT_BUTTON = config.get('Default','NEXT_BUTTON')
+TOGGLE_BUTTON = config.get('Default','TOGGLE_BUTTON')
+VOLUP_BUTTON = config.get('Default','VOLUP_BUTTON')
+VOLDOWN_BUTTON = config.get('Default','VOLDOWN_BUTTON')
+NEXTPLAYLIST_BUTTON = config.get('Default','NEXTPLAYLIST_BUTTON')
+PREVPLAYLIST_BUTTON = config.get('Default','PREVPLAYLIST_BUTTON')
+RANDOM_BUTTON = config.get('Default','RANDOM_BUTTON')
+REPEAT_BUTTON = config.get('Default','REPEAT_BUTTON')
+STOP_BUTTON = config.get('Default','STOP_BUTTON')
 
 volstatus = json.load(urllib2.urlopen('http://127.0.0.1:3000/api/v1/getstate'))
 
