@@ -37,7 +37,7 @@ def is_rip_on_going():
                 if ('albumname' in ripinfodict):
                     return [True, ripinfodict["albumname"], ripinfodict["ripstart"]]
                 else:
-                    return [True]
+                    return [True, "via NanoSound CD", ripinfodict["ripstart"]]
         else:
             return [False]
     else:
