@@ -4,6 +4,9 @@ from __future__ import unicode_literals
 PYTHONIOENCODING = "UTF-8"
 from socketIO_client import SocketIO, LoggingNamespace
 from time import time
+from pymemcache.client.base import Client
+from pymemcache import serde
+
 import RPi.GPIO as GPIO
 import urllib2
 import json

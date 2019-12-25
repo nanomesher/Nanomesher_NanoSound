@@ -17,10 +17,10 @@ import os
 import RPi.GPIO as GPIO
 import json
 import urllib2
+import nanosoundcd_status
+
 from PIL import ImageFont
 from subprocess import check_output
-
-
 
 
 class Screen:
@@ -117,18 +117,17 @@ class Screen:
             draw.rectangle((0, 0, self.device.width - 1, self.device.height - 1), outline='black', fill='black')
         self.enabled = False
 
-
     def logo(self, lanip="", wlanip=""):
 
-        if(self.isColour):
+        if (self.isColour):
             albumartimage = Image.open("logo/splash.png") \
-                        .transform(device.size, Image.AFFINE, (1, 0, 0, 0, 1, 0), Image.BILINEAR) \
-                        .convert(device.mode)
+                .transform(device.size, Image.AFFINE, (1, 0, 0, 0, 1, 0), Image.BILINEAR) \
+                .convert(device.mode)
 
             bgd = Image.new("RGBA", device.size, "black")
             bgd.paste(albumartimage, (5, 1))
             mydither = True
-            
+
             with canvas(device, background=bgd, dither=mydither) as draw:
 
                 if lanip != '':
@@ -138,10 +137,10 @@ class Screen:
                 else:
                     ip = "volumio.local"
 
-                draw.text((3, 65), 'NanoSound v1.8.0', font=self.fonts['small'], fill='white')
+                draw.text((3, 65), 'NanoSound v1.9.0', font=self.fonts['small'], fill='white')
                 draw.text((3, 80), ip, font=self.fonts['small'], fill='white')
                 draw.text((3, 95), "http://nanomesher.com/", font=self.fonts['small'], fill='white')
-                
+
         else:
 
             text = [
@@ -154,11 +153,8 @@ class Screen:
                 '  \\/__/   \\/___/ \\/____/ \\/___/  \\/_/\\/_/\\/_/\\/_/\\/___/',
             ]
 
-
-            
-
             with canvas(device) as draw:
-                #draw.rectangle((0, 0, self.device.width - 1, self.device.height - 1), outline='black', fill='black')
+                # draw.rectangle((0, 0, self.device.width - 1, self.device.height - 1), outline='black', fill='black')
 
                 for i, line in enumerate(text):
                     draw.text((8, 5 + i * 4), line, font=self.fonts['tiny'], fill='white')
@@ -170,33 +166,46 @@ class Screen:
                 else:
                     ip = "volumio"
 
-                draw.text((3, 40), 'NanoSound v1.8.0', font=self.fonts['small'], fill='white')
+                draw.text((3, 40), 'NanoSound v1.9.0', font=self.fonts['small'], fill='white')
                 draw.text((3, 50), ip, font=self.fonts['small'], fill='white')
 
     def getTitleColour(self):
-        if(self.isColour==False):
+        if (self.isColour == False):
             return "white"
         else:
             return "gold"
 
     def getArtistColour(self):
-        if(self.isColour==False):
+        if (self.isColour == False):
             return "white"
         else:
             return "white"
 
     def getProgressBarColour(self):
-        if(self.isColour==False):
+        if (self.isColour == False):
             return "white"
         else:
             return "gold"
 
-
     def getPlayPauseIconColour(self):
-        if(self.isColour==False):
+        if (self.isColour == False):
             return "white"
         else:
             return "GreenYellow"
+
+    def drawalert(self, line1, line2):
+
+        #print(line1)
+        with canvas(device) as draw:
+            draw.text((13, 10), line1, font=self.fonts['medium'], fill='white')
+
+            if(len(line2)<=20):
+                draw.text((2, 30), line2, font=self.fonts['medium'], fill='white')
+            else:
+                draw.text((2, 30), line2[:20], font=self.fonts['medium'], fill='white')
+                draw.text((2, 50), line2[20:], font=self.fonts['medium'], fill='white')
+
+        time.sleep(0.25)
 
     def draw(self, data):
         global ampon
@@ -229,7 +238,7 @@ class Screen:
                 mydither = True
 
         with canvas(device, background=bgd, dither=mydither) as draw:
-            #draw.rectangle((0, 0, self.device.width - 1, self.device.height - 1), outline='black', fill='black')
+            # draw.rectangle((0, 0, self.device.width - 1, self.device.height - 1), outline='black', fill='black')
 
             # Status bar
             if data['status'] == 'play':
@@ -283,10 +292,12 @@ class Screen:
                 txt += " - " + data['album']
 
             if self.artistScroll == None or txt != self.artistScroll.text:
-                self.artistScroll = self.Scroll(self.device.width, self.device.height, txt, self.fonts['medium_u'], 11, self.getArtistColour(),4)
+                self.artistScroll = self.Scroll(self.device.width, self.device.height, txt, self.fonts['medium_u'], 11,
+                                                self.getArtistColour(), 4)
 
             if self.titleScroll == None or data['title'] != self.titleScroll.text:
-                self.titleScroll = self.Scroll(self.device.width, self.device.height, data['title'], self.fonts['big_u'], 20, self.getTitleColour(), 4)
+                self.titleScroll = self.Scroll(self.device.width, self.device.height, data['title'],
+                                               self.fonts['big_u'], 20, self.getTitleColour(), 4)
             self.artistScroll.draw(draw)
             self.titleScroll.draw(draw)
 
@@ -438,18 +449,18 @@ GPIO.setup(27, GPIO.OUT)
 GPIOButtonNo = 16
 GPIOSWMenuButtonNo = 0
 
-if(model=="DAC2"):
+if (model == "DAC2"):
     GPIOButtonNo = 6
     GPIO.setup(GPIOSWMenuButtonNo, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-    GPIO.add_event_detect(GPIOSWMenuButtonNo, GPIO.BOTH, callback=optionButPress,bouncetime=30)
+    GPIO.add_event_detect(GPIOSWMenuButtonNo, GPIO.BOTH, callback=optionButPress, bouncetime=30)
 
 GPIO.setup(GPIOButtonNo, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.add_event_detect(GPIOButtonNo, GPIO.BOTH, callback=optionButPress,bouncetime=30)
+GPIO.add_event_detect(GPIOButtonNo, GPIO.BOTH, callback=optionButPress, bouncetime=30)
 
-
-if(hasOLED):
+if (hasOLED):
     screen = Screen(device, isColour)
-    data_stub = {"status": "stop", "title": "(No data)", "artist": "", "samplerate": "", "bitdepth": "", "random": False,
+    data_stub = {"status": "stop", "title": "(No data)", "artist": "", "samplerate": "", "bitdepth": "",
+                 "random": False,
                  "repeat": False, "repeatSingle": False, "volume": 0}
     spotify_stub = {'logged_in': False, 'playing': False, 'active': False}
     spotifyProcess = False
@@ -471,6 +482,8 @@ except:
 counter = 0
 idle = 0
 volume = 0
+
+has_nanosoundcd = nanosoundcd_status.is_nanosoundcd_installed()
 
 while hasOLED:
     if counter == 0:
@@ -536,7 +549,15 @@ while hasOLED:
         counter = 0
 
     try:
-        screen.draw(data)
+        if (has_nanosoundcd):
+            cd_to_display = nanosoundcd_status.to_display()
+
+
+        if (has_nanosoundcd and cd_to_display is not None):
+            screen.drawalert("Extracting...", cd_to_display)
+            time.sleep(5)
+        else:
+            screen.draw(data)
         time.sleep(0.25)
     except:
         time.sleep(0.25)
