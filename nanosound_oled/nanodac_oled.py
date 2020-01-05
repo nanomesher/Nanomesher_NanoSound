@@ -21,8 +21,6 @@ from PIL import ImageFont
 from subprocess import check_output
 
 
-
-
 class Screen:
     icons = {
         'spotify': "\uf1bc",
@@ -117,18 +115,17 @@ class Screen:
             draw.rectangle((0, 0, self.device.width - 1, self.device.height - 1), outline='black', fill='black')
         self.enabled = False
 
-
     def logo(self, lanip="", wlanip=""):
 
-        if(self.isColour):
+        if (self.isColour):
             albumartimage = Image.open("logo/splash.png") \
-                        .transform(device.size, Image.AFFINE, (1, 0, 0, 0, 1, 0), Image.BILINEAR) \
-                        .convert(device.mode)
+                .transform(device.size, Image.AFFINE, (1, 0, 0, 0, 1, 0), Image.BILINEAR) \
+                .convert(device.mode)
 
             bgd = Image.new("RGBA", device.size, "black")
             bgd.paste(albumartimage, (5, 1))
             mydither = True
-            
+
             with canvas(device, background=bgd, dither=mydither) as draw:
 
                 if lanip != '':
@@ -138,10 +135,10 @@ class Screen:
                 else:
                     ip = "volumio.local"
 
-                draw.text((3, 65), 'NanoSound v1.8.3.1', font=self.fonts['small'], fill='white')
+                draw.text((3, 65), 'NanoSound v1.8.3.2', font=self.fonts['small'], fill='white')
                 draw.text((3, 80), ip, font=self.fonts['small'], fill='white')
                 draw.text((3, 95), "http://nanomesher.com/", font=self.fonts['small'], fill='white')
-                
+
         else:
 
             text = [
@@ -154,11 +151,8 @@ class Screen:
                 '  \\/__/   \\/___/ \\/____/ \\/___/  \\/_/\\/_/\\/_/\\/_/\\/___/',
             ]
 
-
-            
-
             with canvas(device) as draw:
-                #draw.rectangle((0, 0, self.device.width - 1, self.device.height - 1), outline='black', fill='black')
+                # draw.rectangle((0, 0, self.device.width - 1, self.device.height - 1), outline='black', fill='black')
 
                 for i, line in enumerate(text):
                     draw.text((8, 5 + i * 4), line, font=self.fonts['tiny'], fill='white')
@@ -170,30 +164,29 @@ class Screen:
                 else:
                     ip = "volumio"
 
-                draw.text((3, 40), 'NanoSound v1.8.3.1', font=self.fonts['small'], fill='white')
+                draw.text((3, 40), 'NanoSound v1.8.3.2', font=self.fonts['small'], fill='white')
                 draw.text((3, 50), ip, font=self.fonts['small'], fill='white')
 
     def getTitleColour(self):
-        if(self.isColour==False):
+        if (self.isColour == False):
             return "white"
         else:
             return "gold"
 
     def getArtistColour(self):
-        if(self.isColour==False):
+        if (self.isColour == False):
             return "white"
         else:
             return "white"
 
     def getProgressBarColour(self):
-        if(self.isColour==False):
+        if (self.isColour == False):
             return "white"
         else:
             return "gold"
 
-
     def getPlayPauseIconColour(self):
-        if(self.isColour==False):
+        if (self.isColour == False):
             return "white"
         else:
             return "GreenYellow"
@@ -229,7 +222,7 @@ class Screen:
                 mydither = True
 
         with canvas(device, background=bgd, dither=mydither) as draw:
-            #draw.rectangle((0, 0, self.device.width - 1, self.device.height - 1), outline='black', fill='black')
+            # draw.rectangle((0, 0, self.device.width - 1, self.device.height - 1), outline='black', fill='black')
 
             # Status bar
             if data['status'] == 'play':
@@ -283,20 +276,28 @@ class Screen:
                 txt += " - " + data['album']
 
             if self.artistScroll == None or txt != self.artistScroll.text:
-                self.artistScroll = self.Scroll(self.device.width, self.device.height, txt, self.fonts['medium_u'], 11, self.getArtistColour(),4)
+                if (screen.isColour):
+                    self.artistScroll = self.Scroll(self.device.width, self.device.height, txt, self.fonts['medium_u'],
+                                                    11, self.getArtistColour(), 4)
+                else:
+                    draw.text((1, 11), txt, font=self.fonts['medium_u'], fill='white')
 
             if self.titleScroll == None or data['title'] != self.titleScroll.text:
-                if(screen.isColour):
-                    self.titleScroll = self.Scroll(self.device.width, self.device.height, data['title'], self.fonts['big_u'], 20, self.getTitleColour(), 4)
+                if (screen.isColour):
+                    self.titleScroll = self.Scroll(self.device.width, self.device.height, data['title'],
+                                                   self.fonts['big_u'], 20, self.getTitleColour(), 4)
                 else:
                     (w, h) = draw.textsize(data['title'], font=self.fonts['big_u'])
-                    if(w<=self.device.width):
-                        self.titleScroll = self.Scroll(self.device.width, self.device.height, data['title'], self.fonts['big_u'], 20, self.getTitleColour(), 4)
+                    if (w <= self.device.width):
+                        # self.titleScroll = self.Scroll(self.device.width, self.device.height, data['title'], self.fonts['big_u'], 20, self.getTitleColour(), 4)
+                        draw.text((1, 20), data['title'], font=self.fonts['big_u'], fill='white')
                     else:
-                        self.titleScroll = self.Scroll(self.device.width, self.device.height, data['title'], self.fonts['medium_u'], 20, self.getTitleColour(), 4)
+                        # self.titleScroll = self.Scroll(self.device.width, self.device.height, data['title'], self.fonts['medium_u'], 20, self.getTitleColour(), 4)
+                        draw.text((1, 20), data['title'], font=self.fonts['medium_u'], fill='white')
 
-            self.artistScroll.draw(draw)
-            self.titleScroll.draw(draw)
+            if (screen.isColour):
+                self.artistScroll.draw(draw)
+                self.titleScroll.draw(draw)
 
             # Track data
             if data['trackType'] != 'webradio' and data['trackType'] != 'spotify':
@@ -327,12 +328,12 @@ class Screen:
             if data['trackType'] == 'webradio' or data['trackType'] == 'spotify':
                 return
 
-            if(not screen.isColour):
+            if (not screen.isColour):
                 lanip = GetLANIP()
                 wanip = GetWLANIP()
-                if(lanip=="" and wanip!=""):
+                if (lanip == "" and wanip != ""):
                     ip = wanip
-                elif(lanip!=""):
+                elif (lanip != ""):
                     ip = lanip
                 else:
                     ip = "no ip"
@@ -340,9 +341,9 @@ class Screen:
                 (w, h) = draw.textsize(ip, font=self.fonts['medium'])
                 draw.text(((self.device.width - w) / 2 + 6, 57), ip, font=self.fonts['small'], fill='white')
 
-                #duration = str(datetime.timedelta(seconds=data['duration']))
-                #(w, h) = draw.textsize(duration, font=self.fonts['medium'])
-                #draw.text(((self.device.width - w) / 2 + 6, 47), duration, font=self.fonts['small'], fill='white')
+                # duration = str(datetime.timedelta(seconds=data['duration']))
+                # (w, h) = draw.textsize(duration, font=self.fonts['medium'])
+                # draw.text(((self.device.width - w) / 2 + 6, 47), duration, font=self.fonts['small'], fill='white')
 
             if ('seek' in data) and (screen.isColour):
                 elapsed = str(datetime.timedelta(seconds=round(float(data['seek']) / 1000)))
@@ -358,10 +359,11 @@ class Screen:
 
 
 def GetCompareString(data, isColour):
-    if(isColour):
+    if (isColour):
         return str(data['volume']) + str(data['status']) + data['title'] + data['artist'] + str(data['seek'])
     else:
         return str(data['volume']) + str(data['status']) + data['title'] + data['artist']
+
 
 def GetLANIP():
     cmd = \
@@ -428,16 +430,17 @@ def refreshData():
     global showip
 
     try:
-            data = json.load(urllib2.urlopen('http://127.0.0.1:3000/api/v1/getstate'))
-            data = merge_dicts(data_stub, data)
+        data = json.load(urllib2.urlopen('http://127.0.0.1:3000/api/v1/getstate'))
+        data = merge_dicts(data_stub, data)
     except:
-            data = data_stub
+        data = data_stub
 
     if showip:
         data['artist'] = GetLANIP()
         data['title'] = GetWLANIP()
 
     return data
+
 
 with open('/boot/config.txt') as myfile:
     if 'i2c_baudrate' not in myfile.read():
@@ -491,18 +494,18 @@ GPIO.setup(27, GPIO.OUT)
 GPIOButtonNo = 16
 GPIOSWMenuButtonNo = 0
 
-if(model=="DAC2"):
+if (model == "DAC2"):
     GPIOButtonNo = 6
     GPIO.setup(GPIOSWMenuButtonNo, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-    GPIO.add_event_detect(GPIOSWMenuButtonNo, GPIO.BOTH, callback=optionButPress,bouncetime=30)
+    GPIO.add_event_detect(GPIOSWMenuButtonNo, GPIO.BOTH, callback=optionButPress, bouncetime=30)
 
 GPIO.setup(GPIOButtonNo, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.add_event_detect(GPIOButtonNo, GPIO.BOTH, callback=optionButPress,bouncetime=30)
+GPIO.add_event_detect(GPIOButtonNo, GPIO.BOTH, callback=optionButPress, bouncetime=30)
 
-
-if(hasOLED):
+if (hasOLED):
     screen = Screen(device, isColour)
-    data_stub = {"status": "stop", "title": "(No data)", "artist": "", "samplerate": "", "bitdepth": "", "random": False,
+    data_stub = {"status": "stop", "title": "(No data)", "artist": "", "samplerate": "", "bitdepth": "",
+                 "random": False,
                  "repeat": False, "repeatSingle": False, "volume": 0}
     spotify_stub = {'logged_in': False, 'playing': False, 'active': False}
     spotifyProcess = False
@@ -542,7 +545,6 @@ while hasOLED:
                 screen.enable()
                 idle = 0
 
-
         if spotifyProcess:
             try:
                 spotify = json.load(urllib2.urlopen('http://127.0.0.1:4000/api/info/status'))
@@ -576,30 +578,29 @@ while hasOLED:
     if counter == 121:
         counter = 0
 
-    try:
+        try:
 
-        screen.draw(data)
+            screen.draw(data)
 
-        beforecompst = GetCompareString(data,screen.isColour)
-        aftercompst = GetCompareString(data,screen.isColour)
+            beforecompst = GetCompareString(data, screen.isColour)
+            aftercompst = GetCompareString(data, screen.isColour)
 
-        while(beforecompst == aftercompst):
-            data = refreshData()
-            aftercompst = GetCompareString(data,screen.isColour)
+            while (beforecompst == aftercompst):
+                data = refreshData()
+                aftercompst = GetCompareString(data, screen.isColour)
 
-            if data['status'] == 'play' and not screen.enabled:
-                screen.enable()
-                idle = 0
+                if data['status'] == 'play' and not screen.enabled:
+                    screen.enable()
+                    idle = 0
 
-            if data['status'] != 'play' and screen.enabled:
-                idle += 1
+                if data['status'] != 'play' and screen.enabled:
+                    idle += 1
 
-            if screen.enabled and idle > 300:
-                screen.disable()
+                if screen.enabled and idle > 300:
+                    screen.disable()
 
-            time.sleep(0.2)
+                time.sleep(0.2)
 
-
-        time.sleep(0.25)
-    except:
-        time.sleep(0.25)
+            time.sleep(0.25)
+        except:
+            time.sleep(0.25)
