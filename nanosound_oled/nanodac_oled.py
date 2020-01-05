@@ -99,7 +99,7 @@ class Screen:
             'medium': self.make_font('DejaVuSansMono.ttf', 10),
             'big': self.make_font('DejaVuSansMono.ttf', 16),
             'medium_u': self.make_font('simhei.ttf', 10),
-            'big_u': self.make_font('simhei.ttf', 15)
+            'big_u': self.make_font('simhei.ttf', 14)
         }
 
     def make_font(self, name, size):
@@ -138,7 +138,7 @@ class Screen:
                 else:
                     ip = "volumio.local"
 
-                draw.text((3, 65), 'NanoSound v1.8.0', font=self.fonts['small'], fill='white')
+                draw.text((3, 65), 'NanoSound v1.8.3.1', font=self.fonts['small'], fill='white')
                 draw.text((3, 80), ip, font=self.fonts['small'], fill='white')
                 draw.text((3, 95), "http://nanomesher.com/", font=self.fonts['small'], fill='white')
                 
@@ -170,7 +170,7 @@ class Screen:
                 else:
                     ip = "volumio"
 
-                draw.text((3, 40), 'NanoSound v1.8.0', font=self.fonts['small'], fill='white')
+                draw.text((3, 40), 'NanoSound v1.8.3.1', font=self.fonts['small'], fill='white')
                 draw.text((3, 50), ip, font=self.fonts['small'], fill='white')
 
     def getTitleColour(self):
@@ -286,7 +286,15 @@ class Screen:
                 self.artistScroll = self.Scroll(self.device.width, self.device.height, txt, self.fonts['medium_u'], 11, self.getArtistColour(),4)
 
             if self.titleScroll == None or data['title'] != self.titleScroll.text:
-                self.titleScroll = self.Scroll(self.device.width, self.device.height, data['title'], self.fonts['big_u'], 20, self.getTitleColour(), 4)
+                if(screen.isColour):
+                    self.titleScroll = self.Scroll(self.device.width, self.device.height, data['title'], self.fonts['big_u'], 20, self.getTitleColour(), 4)
+                else:
+                    (w, h) = draw.textsize(data['title'], font=self.fonts['big_u'])
+                    if(w<=self.device.width):
+                        self.titleScroll = self.Scroll(self.device.width, self.device.height, data['title'], self.fonts['big_u'], 20, self.getTitleColour(), 4)
+                    else:
+                        self.titleScroll = self.Scroll(self.device.width, self.device.height, data['title'], self.fonts['medium_u'], 20, self.getTitleColour(), 4)
+
             self.artistScroll.draw(draw)
             self.titleScroll.draw(draw)
 
@@ -319,7 +327,24 @@ class Screen:
             if data['trackType'] == 'webradio' or data['trackType'] == 'spotify':
                 return
 
-            if 'seek' in data:
+            if(not screen.isColour):
+                lanip = GetLANIP()
+                wanip = GetWLANIP()
+                if(lanip=="" and wanip!=""):
+                    ip = wanip
+                elif(lanip!=""):
+                    ip = lanip
+                else:
+                    ip = "no ip"
+
+                (w, h) = draw.textsize(ip, font=self.fonts['medium'])
+                draw.text(((self.device.width - w) / 2 + 6, 57), ip, font=self.fonts['small'], fill='white')
+
+                #duration = str(datetime.timedelta(seconds=data['duration']))
+                #(w, h) = draw.textsize(duration, font=self.fonts['medium'])
+                #draw.text(((self.device.width - w) / 2 + 6, 47), duration, font=self.fonts['small'], fill='white')
+
+            if ('seek' in data) and (screen.isColour):
                 elapsed = str(datetime.timedelta(seconds=round(float(data['seek']) / 1000)))
                 draw.text((3, 46), elapsed, font=self.fonts['medium'], fill='white')
                 if 'duration' in data and data['duration'] > 0:
@@ -327,9 +352,16 @@ class Screen:
                     duration = str(datetime.timedelta(seconds=data['duration']))
                     (w, h) = draw.textsize(duration, font=self.fonts['medium'])
                     draw.text(((self.device.width - w - 3), 46), duration, font=self.fonts['medium'], fill='white')
+
                     draw.rectangle((3, 58, 122 * el_pct / 100, 60), outline='white', fill=self.getProgressBarColour())
                     draw.rectangle((122 * el_pct / 100, 59, 125, 59), outline='white', fill='black')
 
+
+def GetCompareString(data, isColour):
+    if(isColour):
+        return str(data['volume']) + str(data['status']) + data['title'] + data['artist'] + str(data['seek'])
+    else:
+        return str(data['volume']) + str(data['status']) + data['title'] + data['artist']
 
 def GetLANIP():
     cmd = \
@@ -392,6 +424,26 @@ def merge_dicts(*dict_args):
     return result
 
 
+def refreshData():
+    global showip
+
+    try:
+            data = json.load(urllib2.urlopen('http://127.0.0.1:3000/api/v1/getstate'))
+            data = merge_dicts(data_stub, data)
+    except:
+            data = data_stub
+
+    if showip:
+        data['artist'] = GetLANIP()
+        data['title'] = GetWLANIP()
+
+    return data
+
+with open('/boot/config.txt') as myfile:
+    if 'i2c_baudrate' not in myfile.read():
+        cmd = "sudo sed -i 's/dtparam=i2c_arm=on.*/dtparam=i2c_arm=on,i2c_baudrate=400000/' /boot/config.txt"
+        p = Popen(cmd, shell=True, stdout=PIPE)
+
 time.sleep(1)
 
 hasOLED = False
@@ -399,9 +451,10 @@ isColour = False
 showip = False
 ampon = False
 model = 'DAC'
+display = '1'
 
 try:
-    display = '1'
+
     with open('/data/configuration/miscellanea/nanosound/config.json') as f:
         data = json.load(f)
         display = data['oledDisplay']['value']
@@ -481,27 +534,14 @@ while hasOLED:
             spotifyProcess = False
 
     if counter % 4 == 0:
-        try:
-            data = json.load(urllib2.urlopen('http://127.0.0.1:3000/api/v1/getstate'))
-            data = merge_dicts(data_stub, data)
-        except:
-            data = data_stub
+        data = refreshData()
 
-        if data['volume'] != volume:
+        if (data['volume'] != volume) and (screen.isColour):
             volume = data['volume']
             if not screen.enabled:
                 screen.enable()
                 idle = 0
 
-        if data['status'] == 'play' and not screen.enabled:
-            screen.enable()
-            idle = 0
-
-        if data['status'] != 'play' and screen.enabled:
-            idle += 1
-
-        if screen.enabled and idle > 300:
-            screen.disable()
 
         if spotifyProcess:
             try:
@@ -527,6 +567,7 @@ while hasOLED:
         if showip:
             data['artist'] = GetLANIP()
             data['title'] = GetWLANIP()
+
     else:
         if data['status'] == 'play' and (data['trackType'] != 'webradio' or data['trackType'] != 'spotify'):
             data['seek'] += 250
@@ -536,7 +577,29 @@ while hasOLED:
         counter = 0
 
     try:
+
         screen.draw(data)
+
+        beforecompst = GetCompareString(data,screen.isColour)
+        aftercompst = GetCompareString(data,screen.isColour)
+
+        while(beforecompst == aftercompst):
+            data = refreshData()
+            aftercompst = GetCompareString(data,screen.isColour)
+
+            if data['status'] == 'play' and not screen.enabled:
+                screen.enable()
+                idle = 0
+
+            if data['status'] != 'play' and screen.enabled:
+                idle += 1
+
+            if screen.enabled and idle > 300:
+                screen.disable()
+
+            time.sleep(0.2)
+
+
         time.sleep(0.25)
     except:
         time.sleep(0.25)
