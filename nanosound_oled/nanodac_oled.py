@@ -17,6 +17,8 @@ import os
 import RPi.GPIO as GPIO
 import json
 import urllib2
+import nanosoundcd_status
+
 from PIL import ImageFont
 from subprocess import check_output
 
@@ -135,7 +137,7 @@ class Screen:
                 else:
                     ip = "volumio.local"
 
-                draw.text((3, 65), 'NanoSound v1.8.3.2', font=self.fonts['small'], fill='white')
+                draw.text((3, 65), 'NanoSound v1.9.0', font=self.fonts['small'], fill='white')
                 draw.text((3, 80), ip, font=self.fonts['small'], fill='white')
                 draw.text((3, 95), "http://nanomesher.com/", font=self.fonts['small'], fill='white')
 
@@ -164,7 +166,7 @@ class Screen:
                 else:
                     ip = "volumio"
 
-                draw.text((3, 40), 'NanoSound v1.8.3.2', font=self.fonts['small'], fill='white')
+                draw.text((3, 40), 'NanoSound v1.9.0', font=self.fonts['small'], fill='white')
                 draw.text((3, 50), ip, font=self.fonts['small'], fill='white')
 
     def getTitleColour(self):
@@ -190,6 +192,19 @@ class Screen:
             return "white"
         else:
             return "GreenYellow"
+
+    def drawalert(self, line1, line2):
+
+        #print(line1)
+        with canvas(device) as draw:
+            draw.text((13, 10), line1, font=self.fonts['medium'], fill='white')
+
+            if(len(line2)<=20):
+                draw.text((2, 30), line2, font=self.fonts['medium_u'], fill='white')
+            else:
+                draw.text((2, 30), line2[:20], font=self.fonts['medium_u'], fill='white')
+                draw.text((2, 50), line2[20:], font=self.fonts['medium_u'], fill='white')
+
 
     def draw(self, data):
         global ampon
@@ -528,6 +543,8 @@ counter = 0
 idle = 0
 volume = 0
 
+has_nanosoundcd = nanosoundcd_status.is_nanosoundcd_installed()
+
 while hasOLED:
     if counter == 0:
         try:
@@ -578,6 +595,7 @@ while hasOLED:
     if counter == 121:
         counter = 0
 
+
         try:
 
             screen.draw(data)
@@ -586,8 +604,23 @@ while hasOLED:
             aftercompst = GetCompareString(data, screen.isColour)
 
             while (beforecompst == aftercompst):
+
+                #Check if play status is checked
                 data = refreshData()
                 aftercompst = GetCompareString(data, screen.isColour)
+
+                #Check if anything to be reported from NanoSound CD
+                if (has_nanosoundcd):
+                    cd_to_display = nanosoundcd_status.to_display()
+                    if (cd_to_display is not None):
+
+                        if(isinstance(cd_to_display,list)):
+                            aftercompst = ""
+                            if(cd_to_display[0]):
+                                screen.drawalert("Extracting...", cd_to_display[1])
+                            else:
+                                screen.drawalert("Extraction stopped", cd_to_display[1])
+                            time.sleep(5)
 
                 if data['status'] == 'play' and not screen.enabled:
                     screen.enable()
