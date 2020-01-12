@@ -554,7 +554,10 @@ while hasOLED:
 
 
         if (has_nanosoundcd and cd_to_display is not None):
-            screen.drawalert("Extracting...", cd_to_display)
+            if(cd_to_display[0]):
+                screen.drawalert("Extracting...", cd_to_display[1])
+            else:
+                screen.drawalert("Extraction stopped", cd_to_display[1])
             time.sleep(5)
         else:
             screen.draw(data)

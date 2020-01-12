@@ -4,23 +4,27 @@ from datetime import datetime
 import os
 
 last_report = None
-
+last_ripping = False
 
 def is_nanosoundcd_installed():
     return os.path.isdir("/home/volumio/nanomesher_nanosoundcd")
 
 
 def to_display():
-    global last_report
+    global last_report, last_ripping
     res = is_rip_on_going()
     if (res[0] == True):
         if(last_report != res[2]):
             last_report = res[2]
-            return res[1]
+            return [True,res[1]]
         else:
             return None
     else:
-        return None
+        if(last_ripping==True):
+            #was ripping but now stopped
+            return [False,res[1]]
+        else:
+            return None
 
 
 def is_rip_on_going():
