@@ -197,7 +197,7 @@ class Screen:
 
         #print(line1)
         with canvas(device) as draw:
-            draw.text((13, 10), line1, font=self.fonts['medium'], fill='white')
+            draw.text((13, 10), line1, font=self.fonts['medium_u'], fill='white')
 
             if(len(line2)<=20):
                 draw.text((2, 30), line2, font=self.fonts['medium_u'], fill='white')
