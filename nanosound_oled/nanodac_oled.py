@@ -17,7 +17,7 @@ import os
 import RPi.GPIO as GPIO
 import json
 import urllib2
-import nanosoundcd_status
+# import nanosoundcd_status
 
 from PIL import ImageFont
 from subprocess import check_output
@@ -45,6 +45,7 @@ class Screen:
     titleScroll = None
     enabled = True
     isColour = False
+    isScroll = False
     enableClock = False
 
     albumartwidth = 50
@@ -88,9 +89,11 @@ class Screen:
             if self.x + w + self.space <= self.border:
                 self.x = self.border
 
-    def __init__(self, dev, isColour):
+    def __init__(self, dev, isColour,isScroll):
         self.device = dev
         self.isColour = isColour
+        self.isScroll = isScroll
+
         self.fonts = {
             'awesmall': self.make_font('fontawesome-webfont.ttf', 8),
             'awesome': self.make_font('fontawesome-webfont.ttf', 10),
@@ -137,7 +140,7 @@ class Screen:
                 else:
                     ip = "volumio.local"
 
-                draw.text((3, 65), 'NanoSound v1.9.0', font=self.fonts['small'], fill='white')
+                draw.text((3, 65), 'NanoSound v1.8.5', font=self.fonts['small'], fill='white')
                 draw.text((3, 80), ip, font=self.fonts['small'], fill='white')
                 draw.text((3, 95), "http://nanomesher.com/", font=self.fonts['small'], fill='white')
 
@@ -291,26 +294,30 @@ class Screen:
                 txt += " - " + data['album']
 
             if self.artistScroll == None or txt != self.artistScroll.text:
-                if (screen.isColour):
+                if (screen.isScroll):
                     self.artistScroll = self.Scroll(self.device.width, self.device.height, txt, self.fonts['medium_u'],
                                                     11, self.getArtistColour(), 4)
                 else:
                     draw.text((1, 11), txt, font=self.fonts['medium_u'], fill='white')
 
             if self.titleScroll == None or data['title'] != self.titleScroll.text:
-                if (screen.isColour):
+                if (screen.isScroll):
                     self.titleScroll = self.Scroll(self.device.width, self.device.height, data['title'],
                                                    self.fonts['big_u'], 20, self.getTitleColour(), 4)
                 else:
                     (w, h) = draw.textsize(data['title'], font=self.fonts['big_u'])
                     if (w <= self.device.width):
-                        # self.titleScroll = self.Scroll(self.device.width, self.device.height, data['title'], self.fonts['big_u'], 20, self.getTitleColour(), 4)
-                        draw.text((1, 20), data['title'], font=self.fonts['big_u'], fill='white')
+                        if(self.isColour):
+                            draw.text((1, 20), data['title'], font=self.fonts['big_u'], fill=self.getArtistColour())
+                        else:
+                            draw.text((1, 20), data['title'], font=self.fonts['big_u'], fill='white')
                     else:
-                        # self.titleScroll = self.Scroll(self.device.width, self.device.height, data['title'], self.fonts['medium_u'], 20, self.getTitleColour(), 4)
-                        draw.text((1, 20), data['title'], font=self.fonts['medium_u'], fill='white')
+                        if(self.isColour):
+                            draw.text((1, 20), data['title'], font=self.fonts['medium_u'], fill=self.getTitleColour())
+                        else:
+                            draw.text((1, 20), data['title'], font=self.fonts['medium_u'], fill='white')
 
-            if (screen.isColour):
+            if (screen.isScroll):
                 self.artistScroll.draw(draw)
                 self.titleScroll.draw(draw)
 
@@ -339,11 +346,8 @@ class Screen:
             else:
                 draw.text(((self.device.width - w) / 2, 38), txt, font=self.fonts['small'], fill='white')
 
-            # Elapsed / Duration
-            if data['trackType'] == 'webradio' or data['trackType'] == 'spotify':
-                return
 
-            if (not screen.isColour):
+            if (not screen.isScroll):
                 lanip = GetLANIP()
                 wanip = GetWLANIP()
                 if (lanip == "" and wanip != ""):
@@ -354,13 +358,13 @@ class Screen:
                     ip = "no ip"
 
                 (w, h) = draw.textsize(ip, font=self.fonts['medium'])
-                draw.text(((self.device.width - w) / 2 + 6, 57), ip, font=self.fonts['small'], fill='white')
+                draw.text(((self.device.width - w) / 2 + 6, 54), ip, font=self.fonts['small'], fill='white')
 
-                # duration = str(datetime.timedelta(seconds=data['duration']))
-                # (w, h) = draw.textsize(duration, font=self.fonts['medium'])
-                # draw.text(((self.device.width - w) / 2 + 6, 47), duration, font=self.fonts['small'], fill='white')
+            # Elapsed / Duration
+            if data['trackType'] == 'webradio' or data['trackType'] == 'spotify':
+                return
 
-            if ('seek' in data) and (screen.isColour):
+            if ('seek' in data) and (screen.isScroll):
                 elapsed = str(datetime.timedelta(seconds=round(float(data['seek']) / 1000)))
                 draw.text((3, 46), elapsed, font=self.fonts['medium'], fill='white')
                 if 'duration' in data and data['duration'] > 0:
@@ -373,11 +377,12 @@ class Screen:
                     draw.rectangle((122 * el_pct / 100, 59, 125, 59), outline='white', fill='black')
 
 
-def GetCompareString(data, isColour):
-    if (isColour):
-        return str(data['volume']) + str(data['status']) + data['title'] + data['artist'] + str(data['seek'])
+
+def GetCompareString(data, isScroll):
+    if (isScroll):
+        return str(data['volume']) + str(data['status']) + data['title'] + data['artist'] + str(data['seek']) + ampon
     else:
-        return str(data['volume']) + str(data['status']) + data['title'] + data['artist']
+        return str(data['volume']) + str(data['status']) + data['title'] + data['artist'] + ampon
 
 
 def GetLANIP():
@@ -466,13 +471,22 @@ time.sleep(1)
 
 hasOLED = False
 isColour = False
+isScroll = True
 showip = False
 ampon = False
 model = 'DAC'
 display = '1'
 
 try:
+    with open('/sys/firmware/devicetree/base/model') as f:
+        if 'Raspberry Pi 4' in f.read():
+            isScroll = False
+        else:
+            isScroll = True
+except:
+    isScroll = True
 
+try:
     with open('/data/configuration/miscellanea/nanosound/config.json') as f:
         data = json.load(f)
         display = data['oledDisplay']['value']
@@ -518,7 +532,7 @@ GPIO.setup(GPIOButtonNo, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.add_event_detect(GPIOButtonNo, GPIO.BOTH, callback=optionButPress, bouncetime=30)
 
 if (hasOLED):
-    screen = Screen(device, isColour)
+    screen = Screen(device, isColour,isScroll)
     data_stub = {"status": "stop", "title": "(No data)", "artist": "", "samplerate": "", "bitdepth": "",
                  "random": False,
                  "repeat": False, "repeatSingle": False, "volume": 0}
@@ -543,7 +557,7 @@ counter = 0
 idle = 0
 volume = 0
 
-has_nanosoundcd = nanosoundcd_status.is_nanosoundcd_installed()
+# has_nanosoundcd = nanosoundcd_status.is_nanosoundcd_installed()
 
 while hasOLED:
     if counter == 0:
@@ -600,27 +614,27 @@ while hasOLED:
 
             screen.draw(data)
 
-            beforecompst = GetCompareString(data, screen.isColour)
-            aftercompst = GetCompareString(data, screen.isColour)
+            beforecompst = GetCompareString(data, screen.isScroll)
+            aftercompst = GetCompareString(data, screen.isScroll)
 
             while (beforecompst == aftercompst):
 
                 #Check if play status is checked
                 data = refreshData()
-                aftercompst = GetCompareString(data, screen.isColour)
+                aftercompst = GetCompareString(data, screen.isScroll)
 
                 #Check if anything to be reported from NanoSound CD
-                if (has_nanosoundcd):
-                    cd_to_display = nanosoundcd_status.to_display()
-                    if (cd_to_display is not None):
-
-                        if(isinstance(cd_to_display,list)):
-                            aftercompst = ""
-                            if(cd_to_display[0]):
-                                screen.drawalert("Extracting...", cd_to_display[1])
-                            else:
-                                screen.drawalert("Extraction stopped", cd_to_display[1])
-                            time.sleep(5)
+                # if (has_nanosoundcd):
+                #     cd_to_display = nanosoundcd_status.to_display()
+                #     if (cd_to_display is not None):
+                #
+                #         if(isinstance(cd_to_display,list)):
+                #             aftercompst = ""
+                #             if(cd_to_display[0]):
+                #                 screen.drawalert("Extracting...", cd_to_display[1])
+                #             else:
+                #                 screen.drawalert("Extraction stopped", cd_to_display[1])
+                #             time.sleep(5)
 
                 if data['status'] == 'play' and not screen.enabled:
                     screen.enable()
