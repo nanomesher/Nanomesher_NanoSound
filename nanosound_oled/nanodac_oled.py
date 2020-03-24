@@ -89,7 +89,7 @@ class Screen:
             if self.x + w + self.space <= self.border:
                 self.x = self.border
 
-    def __init__(self, dev, isColour,isScroll):
+    def __init__(self, dev, isColour, isScroll):
         self.device = dev
         self.isColour = isColour
         self.isScroll = isScroll
@@ -198,16 +198,15 @@ class Screen:
 
     def drawalert(self, line1, line2):
 
-        #print(line1)
+        # print(line1)
         with canvas(device) as draw:
             draw.text((13, 10), line1, font=self.fonts['medium_u'], fill='white')
 
-            if(len(line2)<=20):
+            if (len(line2) <= 20):
                 draw.text((2, 30), line2, font=self.fonts['medium_u'], fill='white')
             else:
                 draw.text((2, 30), line2[:20], font=self.fonts['medium_u'], fill='white')
                 draw.text((2, 50), line2[20:], font=self.fonts['medium_u'], fill='white')
-
 
     def draw(self, data):
         global ampon
@@ -307,12 +306,12 @@ class Screen:
                 else:
                     (w, h) = draw.textsize(data['title'], font=self.fonts['big_u'])
                     if (w <= self.device.width):
-                        if(self.isColour):
+                        if (self.isColour):
                             draw.text((1, 20), data['title'], font=self.fonts['big_u'], fill=self.getArtistColour())
                         else:
                             draw.text((1, 20), data['title'], font=self.fonts['big_u'], fill='white')
                     else:
-                        if(self.isColour):
+                        if (self.isColour):
                             draw.text((1, 20), data['title'], font=self.fonts['medium_u'], fill=self.getTitleColour())
                         else:
                             draw.text((1, 20), data['title'], font=self.fonts['medium_u'], fill='white')
@@ -346,7 +345,6 @@ class Screen:
             else:
                 draw.text(((self.device.width - w) / 2, 38), txt, font=self.fonts['small'], fill='white')
 
-
             if (not screen.isScroll):
                 lanip = GetLANIP()
                 wanip = GetWLANIP()
@@ -379,9 +377,10 @@ class Screen:
 
 def GetCompareString(data, isScroll):
     if (isScroll):
-        return str(data['volume']) + str(data['status']) + data['title'] + data['artist'] + str(data['seek']) + ampon
+        return str(data['volume']) + str(data['status']) + data['title'] + data['artist'] + str(data['seek']) + str(
+            ampon)
     else:
-        return str(data['volume']) + str(data['status']) + data['title'] + data['artist'] + ampon
+        return str(data['volume']) + str(data['status']) + data['title'] + data['artist'] + str(ampon)
 
 
 def GetLANIP():
@@ -535,7 +534,7 @@ GPIO.setup(GPIOButtonNo, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.add_event_detect(GPIOButtonNo, GPIO.BOTH, callback=optionButPress, bouncetime=30)
 
 if (hasOLED):
-    screen = Screen(device, isColour,isScroll)
+    screen = Screen(device, isColour, isScroll)
     data_stub = {"status": "stop", "title": "(No data)", "artist": "", "samplerate": "", "bitdepth": "",
                  "random": False,
                  "repeat": False, "repeatSingle": False, "volume": 0}
@@ -612,7 +611,6 @@ while hasOLED:
     if counter == 121:
         counter = 0
 
-
         try:
 
             screen.draw(data)
@@ -622,11 +620,11 @@ while hasOLED:
 
             while (beforecompst == aftercompst):
 
-                #Check if play status is checked
+                # Check if play status is checked
                 data = refreshData()
                 aftercompst = GetCompareString(data, screen.isScroll)
 
-                #Check if anything to be reported from NanoSound CD
+                # Check if anything to be reported from NanoSound CD
                 # if (has_nanosoundcd):
                 #     cd_to_display = nanosoundcd_status.to_display()
                 #     if (cd_to_display is not None):
