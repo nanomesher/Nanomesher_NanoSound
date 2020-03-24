@@ -169,7 +169,7 @@ class Screen:
                 else:
                     ip = "volumio"
 
-                draw.text((3, 40), 'NanoSound v1.9.0', font=self.fonts['small'], fill='white')
+                draw.text((3, 40), 'NanoSound v1.8.5', font=self.fonts['small'], fill='white')
                 draw.text((3, 50), ip, font=self.fonts['small'], fill='white')
 
     def getTitleColour(self):
@@ -377,7 +377,6 @@ class Screen:
                     draw.rectangle((122 * el_pct / 100, 59, 125, 59), outline='white', fill='black')
 
 
-
 def GetCompareString(data, isScroll):
     if (isScroll):
         return str(data['volume']) + str(data['status']) + data['title'] + data['artist'] + str(data['seek']) + ampon
@@ -498,6 +497,8 @@ except:
 try:
     if display == '2':
         device = ssd1306(port=1, address=0x3C)
+        isScroll = False
+        isColour = False
     elif display == '3':
         actual_args = ['-f', '/home/volumio/nanosound_oled/ssd1351.conf']
         parser = cmdline.create_parser(description='luma.examples arguments')
@@ -511,6 +512,8 @@ try:
         hasOLED = False
     else:
         device = sh1106(port=1, address=0x3C)
+        isScroll = False
+        isColour = False
 
     hasOLED = True
 except:
