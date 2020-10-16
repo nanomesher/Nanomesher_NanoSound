@@ -531,7 +531,11 @@ if (model == "DAC2"):
     GPIO.add_event_detect(GPIOSWMenuButtonNo, GPIO.BOTH, callback=optionButPress, bouncetime=30)
 
 GPIO.setup(GPIOButtonNo, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.add_event_detect(GPIOButtonNo, GPIO.BOTH, callback=optionButPress, bouncetime=30)
+#pin 16 gives errors on pi zerow in volumio using OLED-only displays
+try:
+    GPIO.add_event_detect(GPIOButtonNo, GPIO.BOTH, callback=optionButPress, bouncetime=30)
+except RuntimeError as err:
+    print("OS error: {0}".format(err))
 
 if (hasOLED):
     screen = Screen(device, isColour, isScroll)
