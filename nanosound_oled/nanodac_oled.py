@@ -419,6 +419,8 @@ def toggleShowIP():
 
 def optionButPress(value):
     global startt, endt, idle, screen
+
+    print("pressed")
     if GPIO.input(GPIOButtonNo) == 1:
         startt = time.time()
     if GPIO.input(GPIOButtonNo) == 0:
@@ -529,6 +531,9 @@ if (model == "DAC2"):
     GPIOButtonNo = 6
     GPIO.setup(GPIOSWMenuButtonNo, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     GPIO.add_event_detect(GPIOSWMenuButtonNo, GPIO.BOTH, callback=optionButPress, bouncetime=30)
+
+if (model == "DAC3"):
+    GPIOButtonNo = 9
 
 GPIO.setup(GPIOButtonNo, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.add_event_detect(GPIOButtonNo, GPIO.BOTH, callback=optionButPress, bouncetime=30)
