@@ -1,5 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
 
 from socketIO_client import SocketIO, LoggingNamespace
 from RPi import GPIO

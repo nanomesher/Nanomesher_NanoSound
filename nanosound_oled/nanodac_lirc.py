@@ -1,13 +1,14 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from __future__ import unicode_literals
 
 PYTHONIOENCODING = "UTF-8"
 from socketIO_client import SocketIO, LoggingNamespace
 from time import time
 import RPi.GPIO as GPIO
-import urllib2
+
+import urllib.request
 import json
-import ConfigParser
+import configparser
 import os.path
 
 playlist = []
@@ -48,60 +49,60 @@ def listPlayList():
 def playPlaylist(playlist_index):
     if (len(playlist) > 1):
         playlistname = playlist[playlist_index]
-        urllib2.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=playplaylist&name=' + playlistname)
+        urllib.request.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=playplaylist&name=' + playlistname)
 
 
 def mute():
-    # urllib2.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=volume&value=mute')
+    # urllib.request.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=volume&value=mute')
 
     with SocketIO('127.0.0.1', 3000, LoggingNamespace) as socketIO:
         socketIO.emit('mute', '')
 
 
 def unmute():
-    # urllib2.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=volume&value=unmute')
+    # urllib.request.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=volume&value=unmute')
     with SocketIO('127.0.0.1', 3000, LoggingNamespace) as socketIO:
         socketIO.emit('unmute', '')
 
 
 def unrandom():
-    urllib2.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=random&value=false')
+    urllib.request.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=random&value=false')
 
 
 def randomset():
-    urllib2.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=random&value=true')
+    urllib.request.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=random&value=true')
 
 
 def repeat():
-    urllib2.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=repeat&value=true')
+    urllib.request.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=repeat&value=true')
 
 
 def unrepeat():
-    urllib2.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=repeat&value=false')
+    urllib.request.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=repeat&value=false')
 
 
 def toggle():
-    urllib2.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=toggle')
+    urllib.request.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=toggle')
 
 
 def songprev():
-    urllib2.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=prev')
+    urllib.request.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=prev')
 
 
 def songnext():
-    urllib2.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=next')
+    urllib.request.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=next')
 
 
 def volup():
-    urllib2.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=volume&volume=plus')
+    urllib.request.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=volume&volume=plus')
 
 
 def voldown():
-    urllib2.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=volume&volume=minus')
+    urllib.request.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=volume&volume=minus')
 
 
 def stop():
-    urllib2.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=stop')
+    urllib.request.urlopen('http://127.0.0.1:3000/api/v1/commands/?cmd=stop')
 
 
 # listPlayList()
@@ -162,7 +163,7 @@ randomed = False
 repeated = False  # 0-no repeat , 1-repeat one, 2-repeat
 
 
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 
 if(os.path.isfile('/home/volumio/nanosound_keys.ini')):
     config.read('/home/volumio/nanosound_keys.ini')
@@ -180,7 +181,7 @@ RANDOM_BUTTON = config.get('Default','RANDOM_BUTTON')
 REPEAT_BUTTON = config.get('Default','REPEAT_BUTTON')
 STOP_BUTTON = config.get('Default','STOP_BUTTON')
 
-volstatus = json.load(urllib2.urlopen('http://127.0.0.1:3000/api/v1/getstate'))
+volstatus = json.load(urllib.request.urlopen('http://127.0.0.1:3000/api/v1/getstate'))
 
 if ('repeat' in volstatus):
     if (volstatus['repeat']):
