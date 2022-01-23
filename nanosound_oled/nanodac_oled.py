@@ -372,7 +372,7 @@ class Screen:
                 else:
                     ip = "volumio.local"
 
-                draw.text((3, 65), 'NanoSound v1.8.5', font=self.fonts['small'], fill='white')
+                draw.text((3, 65), 'NanoSound v2.0', font=self.fonts['small'], fill='white')
                 draw.text((3, 80), ip, font=self.fonts['small'], fill='white')
                 draw.text((3, 95), "http://nanomesher.com/", font=self.fonts['small'], fill='white')
 
@@ -457,13 +457,29 @@ screen = None
 
 def main():
     global GPIOButtonNo,hasOLED,isColour,isScroll,ampon,screen
-    #readconfig
-    display = '3'
-    model = "DAC2"
     
+    try:
+        with open('/sys/firmware/devicetree/base/model') as f:
+            if 'Raspberry Pi 4' in f.read():
+                isScroll = False
+            else:
+                isScroll = True
+        
+    finally:
+        isScroll = True
+
+    #readconfig    
+    try:
+        with open('/data/configuration/miscellanea/nanosound/config.json') as f:
+            data = json.load(f)
+            display = data['oledDisplay']['value']
+            model = data['model']['value']
+    finally:
+        display = '3'
+        model = 'DAC2'
+        
     if display == '2':
         device = ssd1306(port=1, address=0x3C)
-        isScroll = False
         isColour = False
         hasOLED = True
     elif display == '3':
@@ -475,8 +491,7 @@ def main():
         isColour = False
         hasOLED = False
     else:
-        device = sh1106(port=1, address=0x3C)
-        isScroll = False
+        device = sh1106(port=1, address=0x3C)        
         isColour = False
         hasOLED = True
 
