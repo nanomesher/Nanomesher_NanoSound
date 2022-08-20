@@ -456,7 +456,7 @@ ampon = False
 screen = None
 
 def main():
-    global GPIOButtonNo,hasOLED,isColour,isScroll,ampon,screen
+    global GPIOButtonNo,hasOLED,isColour,isScroll,ampon,screen,display,device
     
     try:
         with open('/sys/firmware/devicetree/base/model') as f:
@@ -465,7 +465,7 @@ def main():
             else:
                 isScroll = True
         
-    finally:
+    except:
         isScroll = True
 
     #readconfig    
@@ -474,7 +474,8 @@ def main():
             data = json.load(f)
             display = data['oledDisplay']['value']
             model = data['model']['value']
-    finally:
+
+    except:
         display = '3'
         model = 'DAC2'
         
@@ -486,7 +487,8 @@ def main():
         actual_args = ['-f', '/home/volumio/nanosound_oled/ssd1351.conf']        
         isScroll = True
         isColour = True      
-        hasOLED = True  
+        hasOLED = True
+        device = get_device(actual_args)
     elif display == 'N':
         isColour = False
         hasOLED = False
@@ -494,11 +496,6 @@ def main():
         device = sh1106(port=1, address=0x3C)        
         isColour = False
         hasOLED = True
-
-
-    device = get_device(actual_args)
-    isColour = True
-    isScroll = True
     
     #Setup GPIO
     GPIO.setmode(GPIO.BCM)
