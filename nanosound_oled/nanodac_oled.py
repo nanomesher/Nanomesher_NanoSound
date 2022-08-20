@@ -474,11 +474,14 @@ def main():
             data = json.load(f)
             display = data['oledDisplay']['value']
             model = data['model']['value']
-
+            print(display)
     except:
         display = '3'
         model = 'DAC2'
         
+
+    print(display)
+
     if display == '2':
         device = ssd1306(port=1, address=0x3C)
         isColour = False
@@ -487,7 +490,7 @@ def main():
         actual_args = ['-f', '/home/volumio/nanosound_oled/ssd1351.conf']        
         isScroll = True
         isColour = True      
-        hasOLED = True
+        hasOLED = True  
         device = get_device(actual_args)
     elif display == 'N':
         isColour = False
@@ -496,6 +499,7 @@ def main():
         device = sh1106(port=1, address=0x3C)        
         isColour = False
         hasOLED = True
+
     
     #Setup GPIO
     GPIO.setmode(GPIO.BCM)
